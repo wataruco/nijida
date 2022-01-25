@@ -1,5 +1,5 @@
 *{
-    font-family:inherit;
+    font-family:"fantasy";
     font-size:inherit;
     line-height: inherit;
 }
@@ -146,20 +146,29 @@ body{
 
 .btn{
     font-size: 16px;
-    border:solid 1px #55acee;
-    background-color:#fff;
-    color: #55acee;
-    padding: 4px 60px;
+    background-color:#55acee;
+    color: #fff;
+    padding: 2.5px 25px;
     outline: none;
     border-radius: 8px;
     cursor: pointer;
 }
 
 .btn:hover{
-    border:solid 1px #55acee;
-    background-color:#55acee;
+    background-color:#55acee8a;
     color: #fff;
 }
+
+.btn:before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin: -3px 5px 0 0;
+    background: url("2021 Twitter logo - white.png") no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+  }
 
 .setumei{
     font-size: 16px;
