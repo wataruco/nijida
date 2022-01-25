@@ -56,7 +56,7 @@
             <div>{{current_question_counts}}/{{question_counts}}</div>
         </div>
         
-        <a id="twibtton2" href="https://twitter.com/intent/tweet?button_hashtag=にじ打&ref_src=twsrc%5Etfw?url=https://wataruco.github.io/nijida/&text=にじ打を未クリアでツイート&count=none&lang=ja" class="btn">結果をツイート</a>
+        <a id="twibtton2" href="https://twitter.com/share?button_hashtag=にじ打&ref_src=twsrc%5Etfw?url=https://wataruco.github.io/nijida/&text=にじ打を未クリアでツイート&count=none&lang=ja" class="btn">結果をツイート</a>
         <div v-if="startFlg == false" class="setumei">
             <div>説明:半角モードでの開始お願いします</div>
             <div>にじさんじの国内メンバー名がランダムに表示されるのでローマ字入力でタイピングするゲームです</div>
@@ -733,7 +733,7 @@
             
         }
         function twimassage(massage){
-            target.setAttribute('href','https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/&text=' + massage + '&count=none&lang=ja')
+            target.setAttribute('href','https://twitter.com/share?url=https://wataruco.github.io/nijida/&text=' + massage + '&count=none&lang=ja')
         }
         window.onload = function(){
             target = document.getElementById('twibtton2')
