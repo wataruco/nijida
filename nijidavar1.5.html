@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="twitter:card" content=”summary“ />
+    <meta name="twitter:site" content="下茹大根" />
+    <meta name="twitter:title" content="にじ打" />
+    <meta name="twitter:description" content="にじさんじライバーのタイピングゲーム" />
+    <meta name="twitter:image" content="https://wataruco.github.io/nijida/twittercard.png" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app" class="container">
+        <div class="title">
+        <h1>にじ打</h1>
+        <div class="marker"></div>
+        </div>
+        <div v-if="startFlg!=true">
+            <div><button class="startButton1 mb-20" @click="gameStart(shokyuu)">START初級</button></div>
+            <div><button class="startButton2 mb-20" @click="gameStart(joukyuu)">START上級</button></div>
+            <div><button class="startButton3 mb-20" @click="gameStart(question_box_counts)">START全部</button></div>
+            <div><button class="startButton4 mb-20" @click="erusanmodeBTN">えるさんモード</button></div>
+        </div>
+        <div v-if="eruFLG==1">
+            <div>えるさんモードオン</div>
+        </div>
+        <div v-if="startFlg">
+            <div v-if="current_question_counts != question_counts">
+                <div class="question1 mb-20">{{ current_question[1] }}</div>
+                <div class="mb-20">
+                    <nobr v-for="current_romaji_array3 in current_romaji_array3" class="question3">{{ current_romaji_array3 }}</nobr>
+                    <nobr v-for="current_romaji_array2 in current_romaji_array2" class="question2">{{ current_romaji_array2 }}</nobr>
+                </div>
+            </div>
+            <div v-if="current_question_counts == question_counts">
+                <div> {{endtxt}}</div>
+                <div> {{endtimetxt}}</div>
+                <div v-if="eruFLG == 0"  class="clear">
+                    <div v-if="questionMath == shokyuu"> おつかれ三下～</div>
+                    <div v-if="questionMath == joukyuu"> おつかれ笹～</div>
+                    <div v-if="questionMath == question_box_counts"> おつかれーなー</div>
+                </div>
+                <div v-if="eruFLG == 1"  class="clear">乙えるえる～</div>
+            </div>
+            <button v-if="current_question_counts == question_counts" class="startButton mb-20" @click="again">もう一度</button>
+            <div v-if="current_question_counts != question_counts" class="typeFormWrapper mb-20">
+                <input id="typeForm" v-model="typeBox" type="text" class="typeForm" onfocus="hankaku(this)">
+            </div>
+            <div class="gaugeWrapper mb-20">
+                <div v-bind:style="styleObject" class="gauge"></div>
+            </div>
+            <div>{{current_question_counts}}/{{question_counts}}</div>
+        </div>
+        
+        <a id="twibtton2" href="https://twitter.com/intent/tweet?button_hashtag=にじ打&ref_src=twsrc%5Etfw?url=https://sites.google.com/view/nijisanjitypinggame/%E3%83%9B%E3%83%BC%E3%83%A0&text&text=にじ打を未クリアでツイート&count=none&lang=ja" class="btn">結果をツイート</a>
+        <div v-if="startFlg == false" class="setumei">
+            <div>説明:半角モードでの開始お願いします</div>
+            <div>にじさんじの国内メンバー名がランダムに表示されるのでローマ字入力でタイピングするゲームです</div>
+            <div>初級は10名、中級は30名、全部は全員分になり、最期にクリアタイムが表示されます</div>
+            <div>表示が崩れることがありましたらリロードすれば直ることがあります</div>
+            <div>えるさんモードをオンにするとラスボスとしてえるさんのフルネームが出ます</div>
+            <div>現状、動作の確認はWindows10のGoogle Chromeでのみ行っております</div>
+            <div>よければプレイ後にツイートボタンをクリックし、ツイートしてみてください</div>
+        </div>
+    </div>
+
+    <script>
+
+        new Vue({
+            el:"#app",
+            data:{
+                startFlg:"",
+                current_question:"",
+                questionMath:10,
+                questions:[,],
+                typeBox:"",
+                endtxt:"",
+                endtimetxt:"",
+                twit:"",
+                current_question_counts:0,
+                question_contents:0,
+                question_box_counts:0,
+                question_array:[],
+                current_question_array:[],
+                semi_current_question_array:[],
+                current_romaji_array:[], //一部つながった状態のローマ字
+                current_romaji_array2:[], //完全に分離した状態のローマ字
+                current_romaji_array3:[], //完全に分離した状態のローマ字で入力後の表示に使う
+                romaji_array:[],
+                randomSeed:[],
+                shokyuu:0,
+                joukyuu:0,
+                cleartime:0,
+                nyuuryokumoji:"",
+                romaji:"",
+                hantei:0,
+                nokori:"",
+                nyuuryokubafa:"",
+                eruFLG:0,
+                starttime:0,
+                endtime:0,
+                questionsBox:[
+                ['える','える'],
+                ['あいぞのまなみ','愛園愛美'],
+                ['あいばういは','相羽ういは'],
+                ['あくしあくろーね','アクシア・クローネ'],
+                ['あさひなあかね','朝日南アカネ'],
+                ['あすかひな','飛鳥ひな'],
+                ['あづちもも','安土桃'],
+                ['あまみやこころ','天宮こころ'],
+                ['あめもりさよ','雨森小夜'],
+                ['あるすあるまる','アルス・アルマル'],
+                ['あんじゅかとりーな','アンジュ・カトリーナ'],
+                ['いえながむぎ','家長むぎ'],
+                ['いぬいとこ','戌亥とこ'],
+                ['うしみいちご','宇志海いちご'],
+                ['うづきこう','卯月コウ'],
+                ['えくすあるびお','エクス・アルビオ'],
+                ['えまおうがすと','えま★おうがすと'],
+                ['えりーこにふぁー','エリー・コニファー'],
+                ['おのまちはるか','小野町春香'],
+                ['おりばーえばんす','オリバー・エバンス'],
+                ['かいだはる','甲斐田晴'],
+                ['かがみはやと','加賀美ハヤト'],
+                ['かたりべつむぐ','語部紡'],
+                ['かんだしょういち','神田笑一'],
+                ['きたこうじひすい','北小路ヒスイ'],
+                ['くずは','葛葉'],
+                ['くるすなつめ','来栖夏芽'],
+                ['くろいしば','黒井しば'],
+                ['ぐうぇるおすがーる','グウェル・オス・ガール'],
+                ['ぐんどうみれい','郡道美玲'],
+                ['けんもちとうや','剣持刀也'],
+                ['げんづきとうじろう','弦月藤士郎'],
+                ['さえぐさあきな','三枝明那'],
+                ['さくらりつき','桜凛月'],
+                ['ささきさく','笹木咲'],
+                ['しいなゆいか','椎名唯華'],
+                ['しすたーくれあ','シスター・クレア'],
+                ['しずかりん','静凛'],
+                ['しぶやはじめ','渋谷ハジメ'],
+                ['しらゆきともえ','白雪巴'],
+                ['じょーりきいち','ジョー・力一'],
+                ['すおうさんご','周央サンゴ'],
+                ['すこやかな','健屋花那'],
+                ['すずかうたこ','鈴鹿詩子'],
+                ['せとみやこ','瀬戸美夜子'],
+                ['たかみやりおん','鷹宮リオン'],
+                ['つきのみと','月ノ美兎'],
+                ['でびでびでびる','でびでび・でびる'],
+                ['とうどうこはく','東堂コハク'],
+                ['ながおけい','長尾景'],
+                ['なるせなる','成瀬鳴'],
+                ['にしぞのちぐさ','西園チグサ'],
+                ['にゅいそしえーる','ニュイ・ソシエール'],
+                ['はかせふゆき','葉加瀬冬雪'],
+                ['はなばたけちゃいか','花畑チャイカ'],
+                ['はやせそう','早瀬走'],
+                ['はやままりん','葉山舞鈴'],
+                ['はるさきえある','春崎エアル'],
+                ['ふしみがく','伏見ガク'],
+                ['ふみ','フミ'],
+                ['ふみのたまき','文野環'],
+                ['ふわみなと','不破湊'],
+                ['べるもんどばんでらす','ベルモンド・バンデラス'],
+                ['ほしかわさら','星川サラ'],
+                ['ほんまひまわり','本間ひまわり'],
+                ['まいもとけいすけ','舞元啓介'],
+                ['まちたちま','町田ちま'],
+                ['まつかいまお','魔使マオ'],
+                ['まゆずみかい','黛灰'],
+                ['もののべありす','物述有栖'],
+                ['もりなかかざき','森中花咲'],
+                ['やぐるまりね','矢車りね'],
+                ['やしろきずく','社築'],
+                ['やまがみかるた','山神カルタ'],
+                ['ゆうきちひろ','勇気ちひろ'],
+                ['ゆうひりり','夕陽リリ'],
+                ['ゆきしろまひろ','雪城眞尋'],
+                ['ゆづきろあ','夢月ロア'],
+                ['ゆめおいかける','夢追翔'],
+                ['よるみれな','夜見れな'],
+                ['らとなぷてぃ','ラトナ・プティ'],
+                ['りぜへるえすた','リゼ・ヘルエスタ'],
+                ['りんどうみこと','竜胆尊'],
+                ['るいすきゃみー','ルイス・キャミー'],
+                ['れいんぱたーそん','レイン・パターソン'],
+                ['れおすヴぃんせんと','レオス・ヴィンセント'],
+                ['れヴぃえりふぁ','レヴィ・エリファ'],
+                ['ろーれんいろあす','ローレン・イロアス'],
+                ['わらべだめいじー','童田明治'],
+                ['ひぐちかえで','樋口楓'],
+                ['かなえ','叶'],
+                ['どーら','ドーラ'],
+                ['ふれんいーるすたりお','フレン・E・ルスタリオ'],
+                ['めりっさきんれんか','メリッサ・キンレンカ'],
+                ['もいら','モイラ'],
+                ['ぎるざれんさんせい','ギルザレンIII世'],
+                ['しぇりんばーがんでぃ','シェリン・バーガンディ'],
+                ['すずやあき','鈴谷アキ'],
+                ['あかばねようこ','赤羽葉子'],
+                ['まかいのりりむ','魔界ノりりむ'],
+                ['とどろききょうこ','轟京子'],
+                ['すずきまさる','鈴木勝'],
+                ['りゅーしぇん','緑仙'],
+                ['ましろ','ましろ'],
+                ['ならか','奈羅花'],
+                ['いぶらひむ','イブラヒム'],
+                ['そらほしきらめ','空星きらめ'],
+                ],
+                eru_array:[
+                ['すのーほわいとぱらだいすえるさんとふろうわすれなぴゅあぷりんせすりーぶるらぶはいでるんどこどこやったぜヴぁるきゅりあぱっしょんあーるヴのえるちゃこぼしえるありあふろーじあめいどいんぶるーむえる',
+                'スノー・ホワイト・パラダイス・エルサント・フロウ・ワスレナ・ピュア・プリンセス・リーブル・ラブ・ハイデルン・ドコドコ・ヤッタゼ・ヴァルキュリア・パッション・アールヴ・ノエル・チャコボシ・エルアリア・フロージア・メイドイン・ブルーム・エル'],
+                ['える','える'],
+                ],
+                henkan_array:[
+                ['あ','a','','','',''],
+                ['い','i','yi','','',''],
+                ['う','u','wu','whu','',''],
+                ['え','e','','','',''],
+                ['お','o','','','',''],
+                ['うぁ','wha','uxa','','',''],
+                ['うぃ','whi','wi','uxi','',''],
+                ['うぇ','whe','we','uxe','',''],
+                ['うぉ','who','uxo','','',''],
+                ['ゐ','wi','','','',''],
+                ['ゑ','we','','','',''],
+                ['か','ka','ca','','',''],
+                ['き','ki','','','',''],
+                ['く','ku','cu','qu','',''],
+                ['け','ke','','','',''],
+                ['こ','ko','co','','',''],
+                ['きゃ','kya','kixya','','',''],
+                ['きぃ','kyi','kixi','','',''],
+                ['きゅ','kyu','kixyu','','',''],
+                ['きぇ','kye','kixe','','',''],
+                ['きょ','kyo','kixyo','','',''],
+                ['くゃ','qya','kuxya','','',''],
+                ['くゅ','qyu','kuxyu','','',''],
+                ['くょ','qyo','kuxyo','','',''],
+                ['くぁ','qwa','qa','kwa','kuxa',''],
+                ['くぃ','qwi','qi','qyi','kuxi',''],
+                ['くぅ','qwu','kuxu','','',''],
+                ['くぇ','qwe','qe','qye','kuxe',''],
+                ['くぉ','qwo','qo','kuxo','',''],
+                ['が','ga','','','',''],
+                ['ぎ','gi','','','',''],
+                ['ぐ','gu','','','',''],
+                ['げ','ge','','','',''],
+                ['ご','go','','','',''],
+                ['ぎゃ','gya','gixya','','',''],
+                ['ぎぃ','gyi','gixi','','',''],
+                ['ぎゅ','gyu','gixyu','','',''],
+                ['ぎぇ','gye','gixe','','',''],
+                ['ぎょ','gyo','gixyo','','',''],
+                ['ぐぁ','gwa','guxa','','',''],
+                ['ぐぃ','gwi','guxi','','',''],
+                ['ぐぅ','gwu','guxu','','',''],
+                ['ぐぇ','gwe','guxe','','',''],
+                ['ぐぉ','gwo','guxo','','',''],
+                ['ヵ','lka','xka','','',''],
+                ['ヶ','lke','xke','','',''],
+                ['さ','sa','','','',''],
+                ['し','si','ci','shi','',''],
+                ['す','su','','','',''],
+                ['せ','se','ce','','',''],
+                ['そ','so','','','',''],
+                ['しゃ','sya','sha','sixya','shixya',''],
+                ['しぃ','syi','sixi','shixi','',''],
+                ['しゅ','syu','shu','sixyu','shixyu',''],
+                ['しぇ','sye','she','sixe','shixe',''],
+                ['しょ','syo','sho','sixyo','shixyo',''],
+                ['すぁ','swa','suxa','','',''],
+                ['すぃ','swi','suxi','','',''],
+                ['すぅ','swu','suxu','','',''],
+                ['すぇ','swe','suxe','','',''],
+                ['すぉ','swo','suxo','','',''],
+                ['ざ','za','','','',''],
+                ['じ','zi','ji','','',''],
+                ['ず','zu','','','',''],
+                ['ぜ','ze','','','',''],
+                ['ぞ','zo','','','',''],
+                ['じゃ','ja','zya','jya','jixya',''],
+                ['じぃ','zyi','jyi','jixi','',''],
+                ['じゅ','ju','zyu','jyu','jixyu',''],
+                ['じぇ','je','zye','jye','jixe',''],
+                ['じょ','jo','zyo','jyo','jixyo',''],
+                ['た','ta','','','',''],
+                ['ち','ti','chi','','',''],
+                ['つ','tu','tsu','','',''],
+                ['て','te','','','',''],
+                ['と','to','','','',''],
+                ['ちゃ','tya','cha','cya','tixya','chixya'],
+                ['ちぃ','tyi','cyi','tixi','chixi',''],
+                ['ちゅ','tyu','chu','cyu','tixyu','chixyu'],
+                ['ちぇ','tye','che','cye','tixe','chixe'],
+                ['ちょ','tyo','cho','cyo','tixyo','chixyo'],
+                ['つぁ','tsa','tuxa','tsuxa','',''],
+                ['つぃ','tsi','tuxi','tsuxi','',''],
+                ['つぇ','tse','tuxe','tsuxe','',''],
+                ['つぉ','tso','tuxo','tsuxo','',''],
+                ['てゃ','tha','texya','','',''],
+                ['てぃ','thi','texi','','',''],
+                ['てゅ','thu','texyu','','',''],
+                ['てぇ','the','texe','','',''],
+                ['てょ','tho','texyo','','',''],
+                ['とぁ','twa','toxa','','',''],
+                ['とぃ','twi','toxi','','',''],
+                ['とぅ','twu','toxu','','',''],
+                ['とぇ','twe','toxe','','',''],
+                ['とぉ','two','toxo','','',''],
+                ['だ','da','','','',''],
+                ['ぢ','di','','','',''],
+                ['づ','du','','','',''],
+                ['で','de','','','',''],
+                ['ど','do','','','',''],
+                ['ぢゃ','dya','dixya','','',''],
+                ['ぢぃ','dyi','dixi','','',''],
+                ['ぢゅ','dyu','dixyu','','',''],
+                ['ぢぇ','dye','dixe','','',''],
+                ['ぢょ','dyo','dixyo','','',''],
+                ['でゃ','dha','dexya','','',''],
+                ['でぃ','dhi','dexi','','',''],
+                ['でゅ','dhu','dexyu','','',''],
+                ['でぇ','dhe','dexe','','',''],
+                ['でょ','dho','dexyo','','',''],
+                ['どぁ','dwa','doxa','','',''],
+                ['どぃ','dwi','doxi','','',''],
+                ['どぅ','dwu','doxu','','',''],
+                ['どぇ','dwe','doxe','','',''],
+                ['どぉ','dwo','doxo','','',''],
+                ['っ','ltu','xtu','ltsu','',''],
+                ['な','na','','','',''],
+                ['に','ni','','','',''],
+                ['ぬ','nu','','','',''],
+                ['ね','ne','','','',''],
+                ['の','no','','','',''],
+                ['にゃ','nya','nixya','','',''],
+                ['にぃ','nyi','nixi','','',''],
+                ['にゅ','nyu','nixyu','','',''],
+                ['にぇ','nye','nixe','','',''],
+                ['にょ','nyo','nixyo','','',''],
+                ['は','ha','','','',''],
+                ['ひ','hi','','','',''],
+                ['ふ','hu','fu','','',''],
+                ['へ','he','','','',''],
+                ['ほ','ho','','','',''],
+                ['ひゃ','hya','hixya','','',''],
+                ['ひぃ','hyi','hixi','','',''],
+                ['ひゅ','hyu','hixyu','','',''],
+                ['ひぇ','hye','hixe','','',''],
+                ['ひょ','hyo','hixyo','','',''],
+                ['ふぁ','fwa','fa','huxa','fuxa',''],
+                ['ふぃ','fwi','fi','fyi','huxi','fuxi'],
+                ['ふぅ','fwu','huxu','fuxu','',''],
+                ['ふぇ','fwe','fe','fye','huxe','fuxe'],
+                ['ふぉ','fwo','fo','huxo','fuxo',''],
+                ['ふゃ','fya','huxya','fuxya','',''],
+                ['ふゅ','fyu','huxyu','fuxyu','',''],
+                ['ふょ','fyo','huxyo','fuxyo','',''],
+                ['ば','ba','','','',''],
+                ['び','bi','','','',''],
+                ['ぶ','bu','','','',''],
+                ['べ','be','','','',''],
+                ['ぼ','bo','','','',''],
+                ['びゃ','bya','bixya','','',''],
+                ['びぃ','byi','bixi','','',''],
+                ['びゅ','byu','bixyu','','',''],
+                ['びぇ','bye','bixe','','',''],
+                ['びょ','byo','bixyo','','',''],
+                ['ヴぁ','va','vuxa','','',''],
+                ['ヴぃ','vi','vuxi','','',''],
+                ['ヴ','vu','','','',''],
+                ['ヴぇ','ve','vuxe','','',''],
+                ['ヴぉ','vo','vuxo','','',''],
+                ['ヴゃ','vya','vuxya','','',''],
+                //['ヴぃ','vyi','','','',''],
+                ['ヴゅ','vyu','vuxyu','','',''],
+                ['ヴぇ','vye','','','',''],
+                ['ヴょ','vyo','vuxyo','','',''],
+                ['ぱ','pa','','','',''],
+                ['ぴ','pi','','','',''],
+                ['ぷ','pu','','','',''],
+                ['ぺ','pe','','','',''],
+                ['ぽ','po','','','',''],
+                ['ぴゃ','pya','pixya','','',''],
+                ['ぴぃ','pyi','pixi','','',''],
+                ['ぴゅ','pyu','pixyu','','',''],
+                ['ぴぇ','pye','pixe','','',''],
+                ['ぴょ','pyo','pixyo','','',''],
+                ['ま','ma','','','',''],
+                ['み','mi','','','',''],
+                ['む','mu','','','',''],
+                ['め','me','','','',''],
+                ['も','mo','','','',''],
+                ['みゃ','mya','mixya','','',''],
+                ['みぃ','myi','mixi','','',''],
+                ['みゅ','myu','mixyu','','',''],
+                ['みぇ','mye','mixe','','',''],
+                ['みょ','myo','mixyo','','',''],
+                ['や','ya','','','',''],
+                ['ゆ','yu','','','',''],
+                ['よ','yo','','','',''],
+                ['ゃ','lya','xya','','',''],
+                ['ゅ','lyu','xyu','','',''],
+                ['ょ','lyo','xyo','','',''],
+                ['ら','ra','','','',''],
+                ['り','ri','','','',''],
+                ['る','ru','','','',''],
+                ['れ','re','','','',''],
+                ['ろ','ro','','','',''],
+                ['りゃ','rya','rixya','','',''],
+                ['りぃ','ryi','rixi','','',''],
+                ['りゅ','ryu','rixyu','','',''],
+                ['りぇ','rye','rixe','','',''],
+                ['りょ','ryo','rixyo','','',''],
+                ['わ','wa','','','',''],
+                ['を','wo','','','',''],
+                ['ん','n','nn','n','',''],
+                ['ゎ','lwa','xwa','','',''],
+                ['ー','-','','','',''],
+
+                ],
+                boin:[
+                ['あ','a'],
+                ['い','i'],
+                ['う','u'],
+                ['え','e'],
+                ['お','o'],
+                ]
+
+            },   
+            computed:{
+                styleObject:function(){
+                    width =  this.current_question_counts / this.question_counts * 100 + "%"
+                    if(this.current_question_counts == this.question_counts){
+                        color = 'green'
+                    }else{
+                        color = 'orange'
+                    }
+                    return{
+                        'width':width,
+                        'background-color':color
+                    }
+                }
+            },
+            methods:{           
+                gameStart:function(qnum){
+                    this.questionMath = qnum
+                    this.randomSeed = dice(this.question_box_counts,this.questionMath)  
+                    for(var i=0;i<this.randomSeed.length;i++){
+                        this.questions[i] = this.questionsBox[this.randomSeed[i]]
+                        this.question_array[i] = mojibun(this.questions[i][0],this.henkan_array)
+                    }
+                    if(this.eruFLG == 1){
+                        this.questions.push(this.eru_array[0])
+                        this.question_array.push(mojibun(this.eru_array[0][0],this.henkan_array))
+                        this.questionMath = this.questions.length
+                    }
+                    this.current_question = this.questions[0]
+                    this.current_question_array = this.question_array[0]
+                    this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
+                    this.current_romaji_array2 = this.current_romaji_array.join('').split('')
+                    this.question_counts = this.questions.length
+                    this.startFlg = true;
+                    this.$nextTick(function(){
+                        document.getElementById('typeForm').focus()
+                    })
+                    twimassage("にじ打を未クリアでツイート")
+                    this.starttime = Date.now()
+                    this.endtxt = ""
+                    if(this.eruFLG == 1){
+                        this.endtxt = this.endtxt + "えるさんモードで"
+                    }
+                    if(qnum == this.shokyuu){
+                        this.endtxt = this.endtxt + "にじ打 初級クリア!"
+                    }
+                    else if(qnum == this.joukyuu){
+                        this.endtxt = this.endtxt + "にじ打 上級クリア!"
+                    }
+                    else{
+                        this.endtxt = this.endtxt + "にじ打 全員分クリア!"
+                    }
+                },
+                erusanmodeBTN:function(){
+                    if(this.eruFLG == 0){
+                        this.eruFLG = 1
+                    }
+                    else{
+                        this.eruFLG = 0
+                    }
+                },
+                again:function(){
+                    this.startFlg = false;
+                    this.current_question = ""
+                    this.current_question_counts = 0
+                    this.questions = [,]
+                }
+            },
+            mounted:function(){
+                this.shokyuu = 10
+                this.joukyuu = 30
+                this.question_box_counts = this.questionsBox.length
+            },
+            watch:{
+                typeBox:function(e){
+                    if(this.typeBox != ""){
+
+                        this.hantei = mojihantei(this.current_question_array[0],this.nyuuryokubafa + e,this.henkan_array,this.boin)
+                        this.nokori = this.hantei[1]
+                        
+                        if(this.hantei[0] == 1){
+                            if(this.hantei[1] == ""){
+                                this.current_question_array.splice(0,1)
+                                this.current_romaji_array2 = romajihenkan(this.current_question_array,this.henkan_array)
+                                this.current_romaji_array3.push(e)
+                                this.typeBox = ""
+                                this.nyuuryokubafa = ""
+                            }
+                            else{
+                                this.semi_current_question_array = []
+                                for(var i=1;i<this.current_question_array.length;i++){
+                                    this.semi_current_question_array.push(this.current_question_array[i])
+                                }
+                                this.current_romaji_array2 = romajihenkan(this.semi_current_question_array,this.henkan_array)
+                                this.current_romaji_array3.push(e)
+                                this.current_romaji_array2.unshift(this.nokori)
+                                this.nyuuryokubafa = this.nyuuryokubafa + e
+                            }
+                        }
+                        this.typeBox = ""
+                        if(this.current_romaji_array2.length == 0){
+                            this.current_question = this.questions[this.current_question_counts+1]
+                            this.current_question_array = this.question_array[this.current_question_counts+1]
+                            if(this.current_question_counts < this.questionMath - 1){
+                                this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
+                                this.current_romaji_array2 = this.current_romaji_array.join('').split('')
+                            }
+                            this.current_romaji_array3 = []
+                            this.typeBox = ""
+                            this.current_question_counts = this.current_question_counts + 1
+                        }
+                        if(this.current_question_counts == this.questionMath){
+                            this.endtime = Date.now()
+                            this.cleartime = this.endtime - this.starttime
+                            this.endtimetxt  = "クリアタイムは" + timetotext(this.cleartime/1000)
+                            twimassage(this.endtxt + "%0D%0A" + this.endtimetxt)       //ツイートメッセージを入れる
+                        }
+                    }
+                }
+                
+            }
+        })
+        
+        
+        
+        function mojibun(question,henkan_array)  //問題文を1文字に分解して配列で返すたとえば"つきのみと"を　["つ","き","の","み""と"]　という感じの配列にする
+                            //文字で小さい文字を整列するもの　し　と　ょ　をあわせて「しょ」にする小さい「っ」は後に合わせて「っさ」という感じにする
+            {
+                var komoji = ['ぁ','ぃ','ぅ','ぇ','ぉ','ゃ','ゅ','ょ',"っ"]
+                var returnmoji = []
+                var returnmoji2 = []
+                var mojilen = question.length
+                mojiarray = question.split("")  //ここで文字列を一文字ごとにわけて配列の形に分解する
+                for(var i=0;i<mojiarray.length;i++)
+                {
+                    for(var j=0;j<komoji.length;j++)
+                    {
+                        if(mojiarray[i] == komoji[j]){
+                            if(mojiarray[i] == "っ"){
+                                mojiarray[i+1] = mojiarray[i] + mojiarray[i+1]  //ここで「っ」を判定して後ろの文字にくっつける「っ」はそのまま
+                                break
+                            }
+                            else{
+                                mojiarray[i-1] = mojiarray[i-1] + mojiarray[i]  //ここで「っ」意外の小文字を判定し、前の文字にくっつける小文字はそのまま
+                                break
+                            }
+                        }
+                    }
+                }
+                for(var i=0;i<mojiarray.length;i++)
+                { 
+                    var komojiflg = 0
+                    for(var j=0;j<komoji.length;j++)
+                    {
+                        if(mojiarray[i] == komoji[j]){
+                            komojiflg = 1
+                            break
+                        }
+                    }
+                    if(mojiarray[i] === "っ")
+                    {
+                        komojiflg = 1
+                    }
+                    if(komojiflg == 0)
+                    {
+                        returnmoji.push(mojiarray[i])
+                    }
+                }
+                for(var i=0;i<returnmoji.length;i++)
+                {
+                    for(var j=0;j<henkan_array.length;j++)
+                    {
+                        if(returnmoji[i] == henkan_array[j][0]){
+                            returnmoji2.push(henkan_array[j][1])
+                        }
+                    }
+                }
+                return returnmoji
+            }
+        function dice(hani,kazu){    //引数の数の範囲内でランダムな順で配列を返す
+                                    //例えば97と10を受け取ると0~96までの数値を重複なしでランダムに10個配列に入れて返す
+            var returnnum = [];
+            var randomnum = 0;
+            for(i=0;i<kazu;i++)
+            {
+                randomnum = Math.floor(Math.random()*hani)
+                returnnum.push(randomnum)
+                var numcount = returnnum.length
+                if(i!=0){
+                    for(j=0;j<numcount;j++)
+                    {
+                        if(randomnum == returnnum[j-1]){
+                            returnnum.pop()
+                            i--
+                            break
+                        }
+                    }
+                }
+            }
+            return returnnum
+        }
+        function romajihenkan(moji_array,henkan_array){
+            var return_array = []
+            var ttflg = 0
+            var komojiiri = ""
+            for(var i=0;i<moji_array.length;i++)
+            {
+                ttflg = 0    
+                if(moji_array[i].charAt(0) == "っ"){
+                    ttflg = 1
+                    komojiiri = moji_array[i].replace('っ',"")
+                    for(var j=0;j<henkan_array.length;j++)
+                    {
+                        if(komojiiri == henkan_array[j][0]){
+                            return_array.push(henkan_array[j][1].charAt(0) + henkan_array[j][1])
+                        }
+                    }
+                }
+                else{
+                    for(var j=0;j<henkan_array.length;j++){
+                        if(moji_array[i] == henkan_array[j][0]){
+                            return_array.push(henkan_array[j][1])
+                        }
+                    }
+                }
+            }
+            return return_array
+        }
+        function mojihantei(hanteimoji,nyuuryokumoji,henkan_array,boin){        //例えば、「あ」という文字(hanteimoji)に対して「a」が入力されたら(nyuuryokumoji)正解とする
+                                                                                //「しゃ」とかの文字も判定する 
+            var return_array = [0,""]                                           //戻り値は配列にして１個目を正解フラグ、２個目を残りの文字列とする
+            var yomi_array = []
+            var komoji_array = []
+            var nyuuryokmoji_array = nyuuryokumoji.split()                      //入力した文字を１文字ごとの配列にする
+            var komojiiri = ""
+            if(hanteimoji.charAt(0) == "っ"){
+                komojiiri = hanteimoji.replace("っ","")
+                for(i=0;henkan_array.length;i++){
+                    if(komojiiri == henkan_array[i][0]){
+                        for(j=0;j<henkan_array[i].length;j++){
+                            yomi_array.push(henkan_array[i][j].charAt(0) + henkan_array[i][j])
+                        }
+                        break
+                    }
+                }
+            }
+            else{
+                for(var i=0;i<henkan_array.length;i++){
+                    if(hanteimoji == henkan_array[i][0]){                           //ここで判定する文字に対する読み方を探して取り出す
+                        yomi_array = henkan_array[i]
+                        break
+                    }
+                }
+            }
+            for(var i=0;i<yomi_array.length;i++){
+                if(yomi_array[i] == nyuuryokumoji){                             //ここで読み方に完全一致しているか判定して
+                    return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
+                    return_array[1] = ""                                        //ここで戻り値の残り部分を初期化する
+                    break
+                }
+                if(yomi_array[i].indexOf(nyuuryokumoji) == 0){                  //ここで読み方の前方一致しているかを判定して
+                    return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
+                    return_array[1] = yomi_array[i].replace(nyuuryokumoji,"")   //ここで一致している部分を消して入力していない部分を戻り値に設定する
+                    break
+                }
+            }
+            return return_array
+        }
+
+        function hankaku(tbox){     //テキストボックスの入力を半角モードにする
+            tbox.style.imeMode="inactive";
+        }
+        function timetotext(cleartime){     //クリア時間をテキスト形式にして返す
+            var hor = 0
+            var min = 0
+            var sec = 0
+            var msec = 0
+            var text = ""
+            sec = Math.floor(cleartime)
+            msec = Math.floor((cleartime - sec)*100)/100
+            min = Math.floor(sec/60)
+            hour = Math.floor(min/60)
+            sec = sec % 60
+            if(hor != 0){
+                text = text + hor + "時間"
+            }
+            if(min != 0){
+                text = text + min + "分"
+            }
+            if(msec != 0){
+                sec = sec + msec
+                text = text + sec + "秒"
+            }
+            if(msec == 0){
+                text = text + sec + ".0 秒"
+            }
+            return text
+            
+        }
+        function twimassage(massage){
+            target.setAttribute('href','https://twitter.com/intent/tweet?url=https://sites.google.com/view/nijisanjitypinggame/%E3%83%9B%E3%83%BC%E3%83%A0&text=' + massage + '&count=none&lang=ja')
+        }
+        window.onload = function(){
+            target = document.getElementById('twibtton2')
+        }
+    </script>
+</body>
+</html>
