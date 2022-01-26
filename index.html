@@ -470,7 +470,7 @@
                     this.$nextTick(function(){
                         document.getElementById('typeForm').focus()
                     })
-                    twimassage("にじ打を未クリアでツイート")
+                    twimassage("にじ打を未クリアでツイート #にじ打")
                     this.starttime = Date.now()
                     this.endtxt = ""
                     if(this.eruFLG == 1){
@@ -548,7 +548,7 @@
                             this.endtime = Date.now()
                             this.cleartime = this.endtime - this.starttime
                             this.endtimetxt  = "クリアタイムは" + timetotext(this.cleartime/1000)
-                            twimassage(this.endtxt + "%0D%0A" + this.endtimetxt)       //ツイートメッセージを入れる
+                            twimassage(this.endtxt + "%0D%0A" + this.endtimetxt + "%0D%0A #にじ打")       //ツイートメッセージを入れる
                         }
                     }
                 }
