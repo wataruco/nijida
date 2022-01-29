@@ -476,6 +476,7 @@
                     for(var i=0;i<this.randomSeed.length;i++){
                         this.questions[i] = this.questionsBox[this.randomSeed[i]]
                         this.question_array[i] = mojibun(this.questions[i][0],this.henkan_array)
+                        console.log(this.questions[i])
                     }
                     if(this.eruFLG == 1){
                         this.questions.push(this.eru_array[0])
@@ -539,13 +540,13 @@
             watch:{
                 typeBox:function(e){
                     if(this.typeBox != ""){
-                        if(this.current_question_array[0]=="ん" && this.nyuuryokubafa == "n" && this.current_question_array.length != 1 && e != "n"){
-                            if(nhantei(this.current_question_array[1],e,this.boin)==0){
-                                this.current_question_array.splice(0,1)
-                                this.nyuuryokubafa = ""
-                            }
+                        if(this.current_question_array.length == 1){
+                            this.hantei = mojihantei(this.current_question_array[0],this.nyuuryokubafa + e,this.henkan_array,this.boin,"end")
                         }
-                        this.hantei = mojihantei(this.current_question_array[0],this.nyuuryokubafa + e,this.henkan_array,this.boin,this.current_question_array[1])
+                        else{
+                            
+                            this.hantei = mojihantei(this.current_question_array[0],this.nyuuryokubafa + e,this.henkan_array,this.boin,this.current_question_array[1])
+                        }
                         this.nokori = this.hantei[1]
                         if(this.typecount == 0){
                             if(this.misstypecount == 0){
@@ -713,56 +714,82 @@
             }
             return return_array
         }
-        function mojihantei(hanteimoji,nyuuryokumoji,henkan_array,boin){        //例えば、「あ」という文字(hanteimoji)に対して「a」が入力されたら(nyuuryokumoji)正解とする
+        function mojihantei(hanteimoji,nyuuryokumoji,henkan_array,boin,nextmoji){        //例えば、「あ」という文字(hanteimoji)に対して「a」が入力されたら(nyuuryokumoji)正解とする
                                                                                 //「しゃ」とかの文字も判定する 
             var return_array = [0,""]                                           //戻り値は配列にして１個目を正解フラグ、２個目を残りの文字列とする
             var yomi_array = []
             var komoji_array = []
             var nyuuryokmoji_array = nyuuryokumoji.split()                      //入力した文字を１文字ごとの配列にする
             var komojiiri = ""
-            if(hanteimoji.charAt(0) == "っ"){
-                komojiiri = hanteimoji.replace("っ","")
-                for(i=0;henkan_array.length;i++){
-                    if(komojiiri == henkan_array[i][0]){
-                        for(j=0;j<henkan_array[i].length;j++){
-                            yomi_array.push(henkan_array[i][j].charAt(0) + henkan_array[i][j])
+            var nflg = 0   
+            if(hanteimoji == "ん"){
+                if(nyuuryokumoji.length == 2){
+                    if(nyuuryokumoji.charAt(1) == "n"){     //ここで「ん」でnの二回入力が必須かどうかを判定する　nflgが0の時nの二回入力が必須とする
+                        for(h=0;h<boin.length;h++){
+                            if(boin[h][0] == nextmoji){
+                                nflg = 1
+                                break
+                            }
+                            else if(nextmoji == "end"){
+                                nflg = 1
+                                break
+                            }
                         }
+                    }
+                }
+                else{
+                    nflg = 1    
+                }
+            }
+            else{
+                nflg = 1
+            }
+            if(nflg == 1){      //nflgが0の時は変換テーブル通りに判定する
+                if(hanteimoji.charAt(0) == "っ"){
+                    komojiiri = hanteimoji.replace("っ","")
+                    for(i=0;henkan_array.length;i++){
+                        if(komojiiri == henkan_array[i][0]){
+                            for(j=0;j<henkan_array[i].length;j++){
+                                yomi_array.push(henkan_array[i][j].charAt(0) + henkan_array[i][j])
+                            }
+                            break
+                        }
+                    }
+                }
+                else{
+                    for(var i=0;i<henkan_array.length;i++){
+                        if(hanteimoji == henkan_array[i][0]){                           //ここで判定する文字に対する読み方を探して取り出す
+                            yomi_array = henkan_array[i]
+                            break
+                        }
+                    }
+                }
+                for(var i=0;i<yomi_array.length;i++){
+                    if(yomi_array[i] == nyuuryokumoji){                             //ここで読み方に完全一致しているか判定して
+                        return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
+                        return_array[1] = ""                                        //ここで戻り値の残り部分を初期化する
+                        break
+                    }
+                    if(yomi_array[i].indexOf(nyuuryokumoji) == 0){                  //ここで読み方の前方一致しているかを判定して
+                        return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
+                        return_array[1] = yomi_array[i].replace(nyuuryokumoji,"")   //ここで一致している部分を消して入力していない部分を戻り値に設定する
                         break
                     }
                 }
             }
             else{
-                for(var i=0;i<henkan_array.length;i++){
-                    if(hanteimoji == henkan_array[i][0]){                           //ここで判定する文字に対する読み方を探して取り出す
-                        yomi_array = henkan_array[i]
-                        break
-                    }
+                if(hanteimoji == "nn"){                                             //入力された文字が「ん」に対して「nn」だった時は正解として処理 
+                    return_array[0] = 1
+                    return_array[1] = ""
                 }
-            }
-            for(var i=0;i<yomi_array.length;i++){
-                if(yomi_array[i] == nyuuryokumoji){                             //ここで読み方に完全一致しているか判定して
-                    return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
-                    return_array[1] = ""                                        //ここで戻り値の残り部分を初期化する
-                    break
-                }
-                if(yomi_array[i].indexOf(nyuuryokumoji) == 0){                  //ここで読み方の前方一致しているかを判定して
-                    return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
-                    return_array[1] = yomi_array[i].replace(nyuuryokumoji,"")   //ここで一致している部分を消して入力していない部分を戻り値に設定する
-                    break
-                }
-            }
-        return return_array
-        }
+                else{
+                    console.log("読みnn" + yomi_array)                                                               //入力された文字が「ん」にたいして「n」の次にn意外の文字が来たとき
+                    mojihantei(nextmoji,nyuuryokumoji,henkan_array,boin,)
 
-        function nhantei(nextmoji,nyuuryokumoji,boin){
-            var returnflg = 0
-            for(i=0;i<boin.length;i++){
-                if(boin[i][0]==nextmoji){
-                    returnflg = 1
-                    break
-                }
-            }
-            return returnflg
+                }      
+            }   
+            console.log("読み" + yomi_array)
+            return return_array
         }
 
         function hankaku(tbox){     //テキストボックスの入力を半角モードにする
