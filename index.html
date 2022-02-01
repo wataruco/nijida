@@ -85,6 +85,7 @@
                 mondaiURL:"https://wataruco.github.io/nijida/nijisanji.csv",
                 testURL:"https://wataruco.github.io/nijida/testdata.csv",
                 kanayomiURL:"https://wataruco.github.io/nijida/kanayomi.csv",
+                boinURL:"https://wataruco.github.io/nijida/boin.csv",
                 startFlg:"",
                 current_question:"",
                 questionMath:10,
@@ -162,6 +163,7 @@
                 gameStart:async function(qnum){
                     this.questionsBox = await getcsv(this.mondaiURL)
                     this.henkan_array = await getcsv(this.kanayomiURL)
+                    this.boin = await getcsv(this.boinURL)
                     this.question_box_counts = this.questionsBox.length
                     this.questionMath = qnum
                     this.randomSeed = dice(this.question_box_counts,this.questionMath)
