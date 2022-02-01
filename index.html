@@ -43,9 +43,7 @@
                 <div> {{typeresulttxt4}}</div>
                 <div> {{typeresulttxt5}} </div>
                 <div v-if="eruFLG == 0"  class="clear">
-                    <div v-if="questionMath == shokyuu"> おつかれ三下～</div>
-                    <div v-if="questionMath == joukyuu"> おつかれ笹～</div>
-                    <div v-if="questionMath == question_box_counts"> おつかれーなー</div>
+                    <div> {{ endmessagetext }}</div>
                 </div>
                 <div v-if="eruFLG == 1"  class="clear">乙えるえる～</div>
             </div>
@@ -97,6 +95,7 @@
                 typeresulttxt3:"",
                 typeresulttxt4:"",
                 typeresulttxt5:"",
+                endmessagetext:"",
                 twit:"",
                 current_question_counts:0,
                 question_contents:0,
@@ -289,6 +288,7 @@
                             this.typeresulttxt3 = "ミスタイプ数:" + this.misstypecount + " 回"
                             this.typeresulttxt4 = "タイプ速度:" + Math.floor(this.typecount/(this.cleartime/1000)*100)/100 + " type/sec"
                             this.typeresulttxt5 = "タイプ精度:" + Math.floor(this.typecount/(this.typecount+this.misstypecount)*10000)/100 + " パーセント"
+                            this.endmessagetext = this.endmessage[Math.floor(Math.random()*this.endmessage.length)][0]
                             twimassage(this.endtxt + "%0D%0A" + this.typeresulttxt1 + "%0D%0A" + this.typeresulttxt4 + "%0D%0A" + this.typeresulttxt5 + "%0D%0A")       //ツイートメッセージを入れる
                         }
                     }
