@@ -86,6 +86,7 @@
                 testURL:"https://wataruco.github.io/nijida/testdata.csv",
                 kanayomiURL:"https://wataruco.github.io/nijida/kanayomi.csv",
                 boinURL:"https://wataruco.github.io/nijida/boin.csv",
+                endmURL:"https://wataruco.github.io/nijida/endmessage.csv",
                 startFlg:"",
                 current_question:"",
                 questionMath:10,
@@ -132,6 +133,7 @@
                 ],
                 henkan_array:[],
                 boin:[],
+                endmessage:[],
 
             },
             computed:{
@@ -153,12 +155,14 @@
                     this.questionsBox = await getcsv(this.mondaiURL)
                     this.henkan_array = await getcsv(this.kanayomiURL)
                     this.boin = await getcsv(this.boinURL)
+                    this.endmessage = await getcsv(this.endmURL)
+
+                    console.log(this.endmessage[Math.floor(Math.random()*this.endmessage.length)])
                     this.question_box_counts = this.questionsBox.length
                     this.questionMath = qnum
                     this.randomSeed = dice(this.question_box_counts,this.questionMath)
                     for(var i=0;i<this.randomSeed.length;i++){
                         this.questions[i] = this.questionsBox[this.randomSeed[i]]
-                        console.log(this.questions[i])
                         this.question_array[i] = mojibun(this.questions[i][0],this.henkan_array)
                     }
                     if(this.eruFLG == 1){
@@ -303,7 +307,6 @@
                 var returnmoji2 = []
                 var mojilen = question.length
                 mojiarray = question.split("")  //ここで文字列を一文字ごとにわけて配列の形に分解する
-                console.log(question)
                 for(var i=0;i<mojiarray.length;i++)
                 {
                     for(var j=0;j<komoji.length;j++)
@@ -488,6 +491,7 @@
         }
 
         async function getcsv(url){
+            csvarray = []
             const res = await fetch(url)
             const ab = await res.arrayBuffer()
             const td = new TextDecoder("Shift_JIS")
@@ -497,7 +501,6 @@
         }
 
         async function csvmake(csvdata){
-            csvarray = []
             var oneD = csvdata.split("\n")
             for(i=0;i<oneD.length-1;i++){
                 csvarray.push(oneD[i].split(","))
