@@ -19,14 +19,19 @@
         <h1>にじ打</h1>
         <div class="marker"></div>
         </div>
+        
+        <div v-if="eruFLG==1">
+            <div>えるさんモードオン</div>
+        </div>
+
         <div v-if="startFlg!=true">
             <div><button class="startButton1 mb-20" @click="gameStart(shokyuu)">START初級</button></div>
             <div><button class="startButton2 mb-20" @click="gameStart(joukyuu)">START上級</button></div>
             <div><button class="startButton3 mb-20" @click="gameStart(question_box_counts)">START全部</button></div>
             <div><button class="startButton4 mb-20" @click="erusanmodeBTN">えるさんモード</button></div>
-        </div>
-        <div v-if="eruFLG==1">
-            <div>えるさんモードオン</div>
+            <div><button class="setumeiButton mb-20" @click="soundswichBTN">音声切り替え</button></div>
+            <div v-if="soundFLG==1" class = "soundmessage">音声オン</div>
+            <div v-if="soundFLG==0" class = "soundmessage">音声オフ</div>
         </div>
         <div v-if="startFlg">
             <div v-if="current_question_counts != question_counts">
@@ -57,7 +62,7 @@
             <div>{{current_question_counts}}/{{question_counts}}</div>
         </div>
         
-        <a id="twibtton2" href="https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/&text=にじ打を未クリアでツイート&hashtags=にじ打&count=none&lang=ja" class="btn">結果をツイート</a>
+        
         <div v-if="startFlg == false">
             <button class="setumeiButton mb-20" @click="setumeiBTN">説明表示切り替え</button>
             <div v-if="setumeiFLG == 1">
@@ -73,6 +78,7 @@
                 </div>
             </div>
         </div>
+        <a id="twibtton2" href="https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/&text=にじ打を未クリアでツイート&hashtags=にじ打&count=none&lang=ja" class="btn">結果をツイート</a>
     </div>
 
     <script>
@@ -120,6 +126,7 @@
                 nnext:"",
                 eruFLG:0,
                 setumeiFLG:0,
+                soundFLG:0,
                 starttime:0,
                 endtime:0,
                 typecount:0,
@@ -155,8 +162,6 @@
                     this.henkan_array = await getcsv(this.kanayomiURL)
                     this.boin = await getcsv(this.boinURL)
                     this.endmessage = await getcsv(this.endmURL)
-
-                    console.log(this.endmessage[Math.floor(Math.random()*this.endmessage.length)])
                     this.question_box_counts = this.questionsBox.length
                     this.questionMath = qnum
                     this.randomSeed = dice(this.question_box_counts,this.questionMath)
@@ -211,6 +216,14 @@
                         this.setumeiFLG = 0
                     }
                 },
+                soundswichBTN:function(){
+                    if(this.soundFLG == 0){
+                        this.soundFLG = 1
+                    }
+                    else{
+                        this.soundFLG = 0
+                    }
+                },
                 again:function(){
                     this.startFlg = false;
                     this.current_question = ""
@@ -224,8 +237,11 @@
                 
             },
             watch:{
-                typeBox:function(e){
+                typeBox:async function(e){
                     if(this.typeBox != ""){
+                        if(this.soundFLG == 1){
+                            await typsound()   
+                        }
                         if(this.current_question_array[0]=="ん" && this.nyuuryokubafa == "n" && this.current_question_array.length != 1 && e != "n"){
                             if(nhantei(this.current_question_array[1],e,this.boin)==0){
                                 this.current_question_array.splice(0,1)
@@ -270,8 +286,9 @@
                         }
                         this.typeBox = ""
                         if(this.current_romaji_array2.length == 0){
-                            speaker(this.current_question[0])
-                            console.log(this.current_question + "aaa")
+                            if(this.soundFLG == 1){
+                                speaker(this.current_question[0])
+                            }
                             this.current_question = this.questions[this.current_question_counts+1]
                             this.current_question_array = this.question_array[this.current_question_counts+1]
                             if(this.current_question_counts < this.questionMath - 1){
@@ -301,6 +318,7 @@
 
         csvarray = []
         uttr = new SpeechSynthesisUtterance()
+        audioa = new Audio("https://wataruco.github.io/nijida/meka_ka_type02.mp3")
 
         function mojibun(question,henkan_array)  //問題文を1文字に分解して配列で返すたとえば"つきのみと"を　["つ","き","の","み""と"]　という感じの配列にする
                             //文字で小さい文字を整列するもの　し　と　ょ　をあわせて「しょ」にする小さい「っ」は後に合わせて「っさ」という感じにする
@@ -509,10 +527,19 @@
                 csvarray.push(oneD[i].split(","))
             }
         }
-        function speaker(moji){
+
+
+        async function soundload(){
+
+        }
+
+        async function speaker(moji){
             uttr.text = moji
-            uttr.rate = 1
-            speechSynthesis.speak(uttr)
+            await speechSynthesis.speak(uttr)
+        }
+
+        async function typsound(){
+            await audioa.play()
         }
     
     </script>
