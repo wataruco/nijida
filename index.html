@@ -242,7 +242,7 @@
                         if(this.hantei[0] == 1){
                             
                             this.typecount = this.typecount + 1     //正解タイプカウント数を進める
-                            if(this.hantei[1] == ""){
+                            if(this.hantei[1] == ""){    
                                 this.current_question_array.splice(0,1)
                                 this.current_romaji_array2 = romajihenkan(this.current_question_array,this.henkan_array)
                                 this.current_romaji_array3.push(e)
@@ -270,6 +270,8 @@
                         }
                         this.typeBox = ""
                         if(this.current_romaji_array2.length == 0){
+                            speaker(this.current_question[0])
+                            console.log(this.current_question + "aaa")
                             this.current_question = this.questions[this.current_question_counts+1]
                             this.current_question_array = this.question_array[this.current_question_counts+1]
                             if(this.current_question_counts < this.questionMath - 1){
@@ -298,6 +300,7 @@
         })
 
         csvarray = []
+        uttr = new SpeechSynthesisUtterance()
 
         function mojibun(question,henkan_array)  //問題文を1文字に分解して配列で返すたとえば"つきのみと"を　["つ","き","の","み""と"]　という感じの配列にする
                             //文字で小さい文字を整列するもの　し　と　ょ　をあわせて「しょ」にする小さい「っ」は後に合わせて「っさ」という感じにする
@@ -505,6 +508,12 @@
             for(i=0;i<oneD.length-1;i++){
                 csvarray.push(oneD[i].split(","))
             }
+        }
+        function speaker(moji){
+            utter.voice = Ayumi
+            uttr.text = moji
+            uttr.rate = 1
+            speechSynthesis.speak(uttr)
         }
     
     </script>
