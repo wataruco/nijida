@@ -15,23 +15,20 @@
 </head>
 <body>
     <div id="app" class="container">
-        <div class="title">
-        <h1>にじ打</h1>
-        <div class="marker"></div>
-        </div>
-        
+        <div class="title">にじ打</div> 
+        <div class="title2"> ～タイピング測定～</div>
         <div v-if="eruFLG==1">
             <div>えるさんモードオン</div>
         </div>
 
         <div v-if="startFlg!=true">
-            <div><button class="startButton1 mb-20" @click="gameStart(shokyuu)">START初級</button></div>
-            <div><button class="startButton2 mb-20" @click="gameStart(joukyuu)">START上級</button></div>
-            <div><button class="startButton3 mb-20" @click="gameStart(zenbu)">START全部</button></div>
-            <div><button class="startButton4 mb-20" @click="erusanmodeBTN">えるさんモード</button></div>
-            <div><button class="setumeiButton mb-20" @click="soundswichBTN">音声切り替え</button></div>
             <div v-if="soundFLG==1" class = "soundmessage">音声オン</div>
             <div v-if="soundFLG==0" class = "soundmessage">音声オフ</div>
+            <div><button class="startButton1 mb-5" @click="gameStart(shokyuu)">START初級</button></div>
+            <div><button class="startButton2 mb-5" @click="gameStart(joukyuu)">START上級</button></div>
+            <div><button class="startButton3 mb-5" @click="gameStart(zenbu)">START全部</button></div>
+            <div><button class="startButton4 mb-5" @click="erusanmodeBTN">えるさんモード</button></div>
+            <div><button class="setumeiButton mb-5" @click="soundswichBTN">音声切り替え</button></div>
         </div>
         <div v-if="startFlg">
             <div v-if="kaishiFLG==0">
@@ -42,9 +39,11 @@
             </div>
             
             <div v-if="kaishiFLG==2">
-                <div> コンボメーター    </div>
-                <div class="gaugeWrapper mb-20">
-                    <div v-bind:style="styleObject2" class="gauge"></div>
+                <div v-if="endFLG==0">
+                    <div> コンボメーター</div>
+                    <div class="gaugeWrapper mb-20">
+                        <div v-bind:style="styleObject2" class="gauge"></div>
+                    </div>
                 </div>
                 <div v-if="current_question_counts != question_counts">
                     <div class="question1 mb-20">{{ current_question[1] }}</div>
@@ -72,7 +71,7 @@
                 <div>{{current_question_counts}}/{{question_counts}}</div>
             </div>
         </div>
-        <a id="twibtton2" href="https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/&text=にじ打を未クリアでツイート&hashtags=にじ打&count=none&lang=ja" class="btn">結果をツイート</a>
+        <a id="twibtton2" href="https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/nijida.html&text=にじ打を未クリアでツイート&hashtags=にじ打&count=none&lang=ja" class="btn">結果をツイート</a>
     </div>
 
     <script>
@@ -138,7 +137,6 @@
                 henkan_array:[],
                 boin:[],
                 endmessage:[],
-
             },
             computed:{
                 styleObject:function(){
@@ -552,7 +550,7 @@
             
         }
         function twimassage(massage){
-            target.setAttribute('href','https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/&text=' + massage + '&hashtags=にじ打&count=none&lang=ja')
+            target.setAttribute('href','https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/nijida.html&text=' + massage + '&hashtags=にじ打&count=none&lang=ja')
         }
         window.onload = function(){
             target = document.getElementById('twibtton2')
