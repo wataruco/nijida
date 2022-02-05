@@ -42,6 +42,10 @@
             </div>
             
             <div v-if="kaishiFLG==2">
+                
+                <div class="gaugeWrapper mb-20">
+                    <div v-bind:style="styleObject2" class="gauge"></div>
+                </div>
                 <div v-if="current_question_counts != question_counts">
                     <div class="question1 mb-20">{{ current_question[1] }}</div>
                     <div class="mb-20">
@@ -138,6 +142,8 @@
                 starttime:0,
                 endtime:0,
                 typecount:0,
+                combocount:0,
+                combocountMAX:100,      //連続カウント数を設定する変数
                 misstypecount:0,
                 questionsBox:[],
                 eru_array:[
@@ -162,6 +168,29 @@
                         'width':width,
                         'background-color':color
                     }
+                },
+                styleObject2:function(){
+                    mincount = this.combocount
+                    if(mincount > 100){
+                        mincount = 100
+                    }
+                    width =  mincount / this.combocountMAX * 100 + "%"
+                    if(mincount <= this.combocountMAX/4){
+                        color = "#87ceeb"
+                    }
+                    else if(mincount <= this.combocountMAX/2){
+                        color = "#00bfff"
+                    }
+                    else if(mincount <= this.combocountMAX*3/4){
+                        color = "#1e90ff"
+                    }
+                    else{
+                        color = "#0000ff"
+                    }
+                    return{
+                        'width':width,
+                        'background-color':color
+                    }
                 }
             },
             methods:{           
@@ -179,6 +208,7 @@
                     }
                     this.kaishiFLG = 0
                     this.countdownNUM = 3
+                    this.combocount = 0
                     this.randomSeed = dice(this.question_box_counts,this.questionMath)
                     for(var i=0;i<this.randomSeed.length;i++){
                         this.questions[i] = this.questionsBox[this.randomSeed[i]]
@@ -243,6 +273,7 @@
                     this.questions = [,]
                 },
                 onKeyDown(event) {
+                    console.log(this.combocount)
                     e =  event.key
                     if(this.kaishiFLG == 0){
                         if(e == " "){
@@ -260,74 +291,78 @@
                             }, 1000);
                         }
                     }
-                    if(this.soundFLG == 1){
-                        typsound()
-                    }
-                    if(this.current_question_array[0]=="ん" && this.nyuuryokubafa == "n" && this.current_question_array.length != 1 && e != "n"){
-                        if(nhantei(this.current_question_array[1],e,this.boin)==0){
-                            this.current_question_array.splice(0,1)
-                            this.nyuuryokubafa = ""
+                    else{
+                        if(this.soundFLG == 1){
+                            typsound()
                         }
-                    }
-                    this.hantei = mojihantei(this.current_question_array[0],this.nyuuryokubafa + e,this.henkan_array,this.boin,this.current_question_array[1])
-                    this.nokori = this.hantei[1]
-                    
-                    if(this.hantei[0] == 1){
+                        if(this.current_question_array[0]=="ん" && this.nyuuryokubafa == "n" && this.current_question_array.length != 1 && e != "n"){
+                            if(nhantei(this.current_question_array[1],e,this.boin)==0){
+                                this.current_question_array.splice(0,1)
+                                this.nyuuryokubafa = ""
+                            }
+                        }
+                        this.hantei = mojihantei(this.current_question_array[0],this.nyuuryokubafa + e,this.henkan_array,this.boin,this.current_question_array[1])
+                        this.nokori = this.hantei[1]
                         
-                        this.typecount = this.typecount + 1     //正解タイプカウント数を進める
-                        if(this.hantei[1] == ""){    
+                        if(this.hantei[0] == 1){
+                            
+                            this.typecount = this.typecount + 1     //正解タイプカウント数を進める
+                            this.combocount += 1                    //連続カウント数を進める    
+                            if(this.hantei[1] == ""){    
+                                this.current_question_array.splice(0,1)
+                                this.current_romaji_array2 = romajihenkan(this.current_question_array,this.henkan_array)
+                                this.current_romaji_array3.push(e)
+                                this.typeBox = ""
+                                this.nyuuryokubafa = ""
+                            }
+                            else{
+                                this.semi_current_question_array = []
+                                for(var i=1;i<this.current_question_array.length;i++){
+                                    this.semi_current_question_array.push(this.current_question_array[i])
+                                }
+                                this.current_romaji_array2 = romajihenkan(this.semi_current_question_array,this.henkan_array)
+                                this.current_romaji_array3.push(e)
+                                this.current_romaji_array2.unshift(this.nokori)
+                                this.nyuuryokubafa = this.nyuuryokubafa + e
+                            }
+                        }
+                        else if(this.hantei[0]==0){
+                            this.misstypecount = this.misstypecount + 1     //ミスタイプカウント数を進める
+                            this.combocount = 0                             //連続カウント数をリセットする
+                        }
+                        else{
                             this.current_question_array.splice(0,1)
                             this.current_romaji_array2 = romajihenkan(this.current_question_array,this.henkan_array)
                             this.current_romaji_array3.push(e)
-                            this.typeBox = ""
-                            this.nyuuryokubafa = ""
                         }
-                        else{
-                            this.semi_current_question_array = []
-                            for(var i=1;i<this.current_question_array.length;i++){
-                                this.semi_current_question_array.push(this.current_question_array[i])
-                            }
-                            this.current_romaji_array2 = romajihenkan(this.semi_current_question_array,this.henkan_array)
-                            this.current_romaji_array3.push(e)
-                            this.current_romaji_array2.unshift(this.nokori)
-                            this.nyuuryokubafa = this.nyuuryokubafa + e
-                        }
-                    }
-                    else if(this.hantei[0]==0){
-                        this.misstypecount = this.misstypecount + 1     //ミスタイプカウント数を進める
-                    }
-                    else{
-                        this.current_question_array.splice(0,1)
-                        this.current_romaji_array2 = romajihenkan(this.current_question_array,this.henkan_array)
-                        this.current_romaji_array3.push(e)
-                    }
-                    this.typeBox = ""
-                    if(this.current_romaji_array2.length == 0){
-                        if(this.soundFLG == 1){
-                            speaker(this.current_question[0])
-                        }
-                        this.current_question = this.questions[this.current_question_counts+1]
-                        this.current_question_array = this.question_array[this.current_question_counts+1]
-                        if(this.current_question_counts < this.questionMath - 1){
-                            this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
-                            this.current_romaji_array2 = this.current_romaji_array.join('').split('')
-                        }
-                        this.current_romaji_array3 = []
                         this.typeBox = ""
-                        this.current_question_counts = this.current_question_counts + 1
+                        if(this.current_romaji_array2.length == 0){
+                            if(this.soundFLG == 1){
+                                speaker(this.current_question[0])
+                            }
+                            this.current_question = this.questions[this.current_question_counts+1]
+                            this.current_question_array = this.question_array[this.current_question_counts+1]
+                            if(this.current_question_counts < this.questionMath - 1){
+                                this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
+                                this.current_romaji_array2 = this.current_romaji_array.join('').split('')
+                            }
+                            this.current_romaji_array3 = []
+                            this.typeBox = ""
+                            this.current_question_counts = this.current_question_counts + 1
+                        }
+                        if(this.current_question_counts == this.questionMath){
+                            this.endtime = Date.now()
+                            this.cleartime = this.endtime - this.starttime
+                            this.typeresulttxt1  = "クリアタイム:" + timetotext(this.cleartime/1000)
+                            this.typeresulttxt2 = "タイプ数:" + (this.typecount + this.misstypecount) + " 回"
+                            this.typeresulttxt3 = "ミスタイプ数:" + this.misstypecount + " 回"
+                            this.typeresulttxt4 = "タイプ速度:" + Math.floor(this.typecount/(this.cleartime/1000)*100)/100 + " type/sec"
+                            this.typeresulttxt5 = "タイプ精度:" + Math.floor(this.typecount/(this.typecount+this.misstypecount)*10000)/100 + " パーセント"
+                            this.endmessagetext = this.endmessage[Math.floor(Math.random()*this.endmessage.length)][0]
+                            twimassage(this.endtxt + "%0D%0A" + this.typeresulttxt1 + "%0D%0A" + this.typeresulttxt4 + "%0D%0A" + this.typeresulttxt5 + "%0D%0A")       //ツイートメッセージを入れる
+                        }
                     }
-                    if(this.current_question_counts == this.questionMath){
-                        this.endtime = Date.now()
-                        this.cleartime = this.endtime - this.starttime
-                        this.typeresulttxt1  = "クリアタイム:" + timetotext(this.cleartime/1000)
-                        this.typeresulttxt2 = "タイプ数:" + (this.typecount + this.misstypecount) + " 回"
-                        this.typeresulttxt3 = "ミスタイプ数:" + this.misstypecount + " 回"
-                        this.typeresulttxt4 = "タイプ速度:" + Math.floor(this.typecount/(this.cleartime/1000)*100)/100 + " type/sec"
-                        this.typeresulttxt5 = "タイプ精度:" + Math.floor(this.typecount/(this.typecount+this.misstypecount)*10000)/100 + " パーセント"
-                        this.endmessagetext = this.endmessage[Math.floor(Math.random()*this.endmessage.length)][0]
-                        twimassage(this.endtxt + "%0D%0A" + this.typeresulttxt1 + "%0D%0A" + this.typeresulttxt4 + "%0D%0A" + this.typeresulttxt5 + "%0D%0A")       //ツイートメッセージを入れる
-                    }
-            },
+                },
             },
             mounted:function(){
                 this.shokyuu = 10
