@@ -217,7 +217,6 @@
                     this.startFlg = true;
                     this.typecount = 0          //タイプカウント数をゼロリセット
                     this.misstypecount = 0      //ミスタイプカウント数をリセット
-                    twimassage("にじ打を未クリアでツイート")
                     this.endtxt = ""
                     if(this.eruFLG == 1){
                         this.endtxt = this.endtxt + "えるさんモードで "
@@ -231,6 +230,7 @@
                     else{
                         this.endtxt = this.endtxt + "にじ打 全員分クリア!"
                     }
+                    console.log(this.endtxt)
                 },
                 erusanmodeBTN:function(){
                     if(this.eruFLG == 0){
@@ -561,13 +561,7 @@
             return text
             
         }
-        function twimassage(massage){
-            target.setAttribute('href','https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/nijida.html&text=' + massage + '&hashtags=にじ打&count=none&lang=ja')
-        }
 
-        function twiBTNaction(message){
-
-        }
         window.onload = function(){
             target = document.getElementById('twibtton2')
         }
