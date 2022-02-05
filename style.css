@@ -115,7 +115,19 @@ body{
     border-width: 1px;
     border-color: darkslategray;
     outline: none;
-    border-radius: 15px;
+    border-radius: 10px;
+}
+
+.setumeiButton2{
+    font-size: 16px;
+    background-color:black;
+    color: #fff;
+    padding: 4px 30px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: darkslategray;
+    outline: none;
+    border-radius: 10px;
 }
 
 .playBTN{
@@ -157,6 +169,11 @@ body{
 }
 
 .setumeiButton:hover{
+    opacity: 0.9;
+    border-radius: 20px;
+}
+
+.setumeiButton2:hover{
     opacity: 0.9;
     border-radius: 20px;
 }

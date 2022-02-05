@@ -17,19 +17,16 @@
     <div id="app" class="container">
         <div class="title">にじ打</div> 
         <div class="title2"> ～タイピング測定～</div>
-        <div v-if="eruFLG==1">
-            <div>えるさんモードオン</div>
-        </div>
 
         <div v-if="startFlg!=true">
-            <div v-if="soundFLG==1" class = "soundmessage">音声オン</div>
-            <div v-if="soundFLG==0" class = "soundmessage">音声オフ</div>
             <div><button class="startButton1 mb-5" @click="gameStart(shokyuu)">START初級</button></div>
             <div><button class="startButton2 mb-5" @click="gameStart(joukyuu)">START上級</button></div>
             <div><button class="startButton3 mb-5" @click="gameStart(zenbu)">START全部</button></div>
             <div>
-                <button class="setumeiButton mb-5" @click="erusanmodeBTN">えるさんモード</button>
-                <button class="setumeiButton mb-5" @click="soundswichBTN">音声切り替え</button>
+                <nobr v-if="eruFLG==0"><button class="setumeiButton mb-5" @click="erusanmodeBTN">えるさんモードオフ</button></nobr>
+                <nobr v-if="eruFLG==1"><button class="setumeiButton2 mb-5" @click="erusanmodeBTN">えるさんモードオン</button></nobr>
+                <nobr v-if="soundFLG==0"><button class="setumeiButton mb-5" @click="soundswichBTN">音声オン</button></nobr>
+                <nobr v-if="soundFLG==1"><button class="setumeiButton2 mb-5" @click="soundswichBTN">音声オフ</button></nobr>
             </div>
             <button class="setumeiButton mb-5" @click="aboutBTN">about</button>
         </div>
