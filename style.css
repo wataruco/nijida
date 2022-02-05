@@ -237,13 +237,15 @@ body{
     height: 12px;
 }
 
-.btn{
-    font-size: 16px;
-    background-color:#55acee;
+.btn {
+    position: relative;
+    height: 20px;
+    box-sizing: border-box;
+    padding: 1px 12px 1px 12px;
+    background-color: #1d9bf0;
     color: #fff;
-    padding: 2.5px 25px;
-    outline: none;
-    border-radius: 30px;
+    border-radius: 9999px;
+    font-weight: 500;
     cursor: pointer;
 }
 
@@ -262,6 +264,28 @@ body{
     background-size: contain;
     vertical-align: middle;
   }
+
+.dekabtn{
+    font-size: 160px;
+    background-color:#55acee;
+    color: #fff;
+    padding: 2.5px 25px;
+    outline: none;
+    border-radius: 200px;
+    cursor: pointer;
+}
+
+.dekabtn:before {
+    content: "";
+    display: inline-block;
+    width: 180px;
+    height: 180px;
+    margin: -3px 5px 0 0;
+    background: url("2021 Twitter logo - white.png") no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+  }
+
 
 .setumei{
     margin: auto;

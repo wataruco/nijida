@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@shitayudedaikon" />
+    <meta name="twitter:title" content="にじ打" />
+    <meta name="twitter:description" content="にじさんじライバーのタイピングゲーム" />
+    <meta name="twitter:image" content="https://wataruco.github.io/nijida/twittercard.png" />
+    <title>Document</title>
     <link rel="stylesheet" href="style.css">
-    <title>大根のツイッター</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 </head>
 <body>
     <header>
@@ -20,6 +26,25 @@
             </ul>
         </nav>
     </header>
-    <a class="twitter-timeline" data-width="500" data-height="500" href="https://twitter.com/shitayudedaikon?ref_src=twsrc%5Etfw">Tweets by shitayudedaikon</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <div class="mb-20"></div>
+    <a class="dekabtn" @click="followaction()">糞デカフォローボタン</a>
+    <div class="mb-20"></div>
+    <div style="display: flex;justify-content: flex-end;">
+        <a class="twitter-timeline" data-width="500" data-height="500" href="https://twitter.com/shitayudedaikon?ref_src=twsrc%5Etfw">Tweets by shitayudedaikon</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+    <a href="https://twitter.com/shitayudedaikon?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @shitayudedaikon</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script>
+        new Vue({
+            el:"#app",
+            data:{
+                followURL:"https://twitter.com/shitayudedaikon?ref_src=twsrc%5Etfw",
+            },
+            methods:{
+                followaction:function(){
+                    window.location.href = this.followURL
+                }
+            }
+        })
+    </script>
 </body>
 </html>
