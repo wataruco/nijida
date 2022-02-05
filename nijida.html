@@ -27,8 +27,11 @@
             <div><button class="startButton1 mb-5" @click="gameStart(shokyuu)">START初級</button></div>
             <div><button class="startButton2 mb-5" @click="gameStart(joukyuu)">START上級</button></div>
             <div><button class="startButton3 mb-5" @click="gameStart(zenbu)">START全部</button></div>
-            <div><button class="startButton4 mb-5" @click="erusanmodeBTN">えるさんモード</button></div>
-            <div><button class="setumeiButton mb-5" @click="soundswichBTN">音声切り替え</button></div>
+            <div>
+                <button class="setumeiButton mb-5" @click="erusanmodeBTN">えるさんモード</button>
+                <button class="setumeiButton mb-5" @click="soundswichBTN">音声切り替え</button>
+            </div>
+            <button class="setumeiButton mb-5" @click="aboutBTN">about</button>
         </div>
         <div v-if="startFlg">
             <div v-if="kaishiFLG==0">
@@ -53,15 +56,18 @@
                     </div>
                 </div>
                 <div v-if="current_question_counts == question_counts">
-                    <div> {{typeresulttxt1}}</div>
-                    <div> {{typeresulttxt2}}</div>
-                    <div> {{typeresulttxt3}}</div>
-                    <div> {{typeresulttxt4}}</div>
-                    <div> {{typeresulttxt5}} </div>
+                    <div class="resultTXT">
+                        <div> {{typeresulttxt1}}</div>
+                        <div> {{typeresulttxt2}}</div>
+                        <div> {{typeresulttxt3}}</div>
+                        <div> {{typeresulttxt4}}</div>
+                        <div> {{typeresulttxt5}} </div>
+                    </div>
                     <div v-if="eruFLG == 0"  class="clear">
                         <div> {{ endmessagetext }}</div>
                     </div>
                     <div v-if="eruFLG == 1"  class="clear">乙えるえる～</div>
+                    <a id="twibtton2" class="btn" @click="twiaction">結果をツイート</a>
                 </div>
                 <button v-if="current_question_counts == question_counts" class="startButton mb-20" @click="again">もう一度</button>
 
@@ -71,7 +77,6 @@
                 <div>{{current_question_counts}}/{{question_counts}}</div>
             </div>
         </div>
-        <a id="twibtton2" href="https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/nijida.html&text=にじ打を未クリアでツイート&hashtags=にじ打&count=none&lang=ja" class="btn">結果をツイート</a>
     </div>
 
     <script>
@@ -83,6 +88,10 @@
                 kanayomiURL:"https://wataruco.github.io/nijida/kanayomi.csv",
                 boinURL:"https://wataruco.github.io/nijida/boin.csv",
                 endmURL:"https://wataruco.github.io/nijida/endmessage.csv",
+                twiURL1:'https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/nijida.html&text=',
+                twiURL2:"",
+                twiURL3:'&hashtags=にじ打&count=none&lang=ja',
+                topURL:"https://wataruco.github.io/nijida/index.html",
                 startFlg:"",
                 current_question:"",
                 questionMath:10,
@@ -192,6 +201,7 @@
                     this.countdownNUM = 3
                     this.combocount = 0
                     this.endFLG = 0
+                    this.twiURL2 = ""
                     this.randomSeed = dice(this.question_box_counts,this.questionMath)
                     for(var i=0;i<this.randomSeed.length;i++){
                         this.questions[i] = this.questionsBox[this.randomSeed[i]]
@@ -254,6 +264,12 @@
                     this.current_question = ""
                     this.current_question_counts = 0
                     this.questions = [,]
+                },
+                twiaction:function(){
+                    window.open(this.twiURL1 + this.twiURL2 + this.twiURL3, '_blank');
+                },
+                aboutBTN:function(){
+                    window.location.href = this.topURL
                 },
                 onKeyDown(event) {
                     if(this.endFLG == 0){
@@ -341,7 +357,7 @@
                                 this.typeresulttxt4 = "タイプ速度:" + Math.floor(this.typecount/(this.cleartime/1000)*100)/100 + " type/sec"
                                 this.typeresulttxt5 = "タイプ精度:" + Math.floor(this.typecount/(this.typecount+this.misstypecount)*10000)/100 + " パーセント"
                                 this.endmessagetext = this.endmessage[Math.floor(Math.random()*this.endmessage.length)][0]
-                                twimassage(this.endtxt + "%0D%0A" + this.typeresulttxt1 + "%0D%0A" + this.typeresulttxt4 + "%0D%0A" + this.typeresulttxt5 + "%0D%0A")       //ツイートメッセージを入れる
+                                this.twiURL2 = this.endtxt + "%0D%0A" + this.typeresulttxt1 + "%0D%0A" + this.typeresulttxt4 + "%0D%0A" + this.typeresulttxt5 + "%0D%0A"       //ツイートメッセージを入れる
                                 this.endFLG = 1
                             }
                         }
@@ -353,7 +369,6 @@
                 this.joukyuu = 30
                 this.zenbu = 999
                 document.addEventListener('keydown', this.onKeyDown)
-                
             },
 
             beforeDestroy() {
@@ -552,6 +567,10 @@
         function twimassage(massage){
             target.setAttribute('href','https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/nijida.html&text=' + massage + '&hashtags=にじ打&count=none&lang=ja')
         }
+
+        function twiBTNaction(message){
+
+        }
         window.onload = function(){
             target = document.getElementById('twibtton2')
         }
@@ -573,11 +592,6 @@
             }
         }
 
-
-        async function soundload(){
-
-        }
-
         async function speaker(moji){
             uttr.text = moji
             await speechSynthesis.speak(uttr)
@@ -591,8 +605,6 @@
             const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             await _sleep(2000);
         }
-
-
     </script>
 </body>
 </html>

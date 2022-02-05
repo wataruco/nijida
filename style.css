@@ -4,6 +4,7 @@
     line-height: inherit;
 }
 body{
+    font-family: "ヒラギノ角ゴ Pro";
     font-size: 24px;
 }
 
@@ -16,9 +17,8 @@ body{
 }
 
 .container{
-    font-family: "ヒラギノ角ゴ Pro";
+    height: 420px;
     width: 500px;
-    height: 420.px;
     margin: 0 auto;
     text-align: center;
     background-color: rgb(255, 248, 236);
@@ -56,7 +56,6 @@ body{
     border: none;
     outline: none;
     border-radius: 8px;
-    cursor: pointer;
 }
 
 .startButton1{
@@ -117,7 +116,19 @@ body{
     border-color: darkslategray;
     outline: none;
     border-radius: 15px;
-    cursor: pointer;
+}
+
+.playBTN{
+    text-align: center;
+    font-size: 16px;
+    background-color:#fff;
+    color: black;
+    padding: 4px 30px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: darkslategray;
+    outline: none;
+    border-radius: 15px;
 }
 
 .startButton:hover{
@@ -150,6 +161,10 @@ body{
     border-radius: 20px;
 }
 
+.playBTNhover{
+    opacity: 0.9;
+    border-radius: 20px;
+}
 
 .question{
     color: gray;
@@ -171,12 +186,13 @@ body{
 }
 
 .nextquestion{
-    font-sie: 20px;
+    font-size: 20px;
     float: right;
     width: 50%;
     color:antiquewhite;
 }
 .clear{
+
     color: #03a9f4;
 }
 
@@ -231,14 +247,16 @@ body{
   }
 
 .setumei{
+    margin: auto;
     font-size: 16px;
-    width: 800px;
-    height: 250px;
+    width: 900px;
     text-align: left;
     border:10px double;
     border-radius: 20px;
     padding-top: 20px;
     padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
 }
 
 .soundmessage{
@@ -251,4 +269,8 @@ body{
 
 .countdown{
     font-size: 100px;
+}
+
+.resultTXT{
+    font-size: 18px;
 }
