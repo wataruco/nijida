@@ -27,7 +27,7 @@
         <div v-if="startFlg!=true">
             <div><button class="startButton1 mb-20" @click="gameStart(shokyuu)">START初級</button></div>
             <div><button class="startButton2 mb-20" @click="gameStart(joukyuu)">START上級</button></div>
-            <div><button class="startButton3 mb-20" @click="gameStart(question_box_counts)">START全部</button></div>
+            <div><button class="startButton3 mb-20" @click="gameStart(zenbu)">START全部</button></div>
             <div><button class="startButton4 mb-20" @click="erusanmodeBTN">えるさんモード</button></div>
             <div><button class="setumeiButton mb-20" @click="soundswichBTN">音声切り替え</button></div>
             <div v-if="soundFLG==1" class = "soundmessage">音声オン</div>
@@ -171,7 +171,12 @@
                     this.boin = await getcsv(this.boinURL)
                     this.endmessage = await getcsv(this.endmURL)
                     this.question_box_counts = this.questionsBox.length
-                    this.questionMath = qnum
+                    if(qnum == 999){
+                        this.questionMath = this.questionsBox.length
+                    }
+                    else{
+                        this.questionMath = qnum
+                    }
                     this.kaishiFLG = 0
                     this.countdownNUM = 3
                     this.randomSeed = dice(this.question_box_counts,this.questionMath)
@@ -186,9 +191,6 @@
                     }
                     this.current_question = this.questions[0]
                     this.current_question_array = this.question_array[0]
-                    console.log(this.questions[0])
-                    console.log(this.current_question_array)
-                    console.log(this.henkan_array)
                     this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
                     this.current_romaji_array2 = this.current_romaji_array.join('').split('')
                     this.question_counts = this.questions.length
@@ -330,6 +332,7 @@
             mounted:function(){
                 this.shokyuu = 10
                 this.joukyuu = 30
+                this.zenbu = 999
                 document.addEventListener('keydown', this.onKeyDown)
                 
             },
