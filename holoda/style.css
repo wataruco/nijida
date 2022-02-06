@@ -65,38 +65,38 @@ body{
 
 .startButton1{
     background-color: rgb(62, 204, 247);
-    color: rgb(117, 78, 33);
+    color: rgb(38, 118, 143);
     padding: 4px 30px;
     border: none;
     outline: none;
     border-radius: 15px;
     cursor: pointer;
     text-shadow: -1px -1px 1px rgb(248, 239, 230);
-    border-bottom: 5px solid rgb(117, 78, 33);
+    border-bottom: 5px solid rgb(38, 118, 143);
 }
 
 .startButton2{
     background-color: rgb(12, 130, 241);
-    color: rgb(10, 19, 136);
+    color: rgb(14, 81, 145);
     padding: 4px 30px;
     border: none;
     outline: none;
     border-radius: 15px;
     cursor: pointer;
     text-shadow: -1px -1px 1px rgb(210, 213, 255);
-    border-bottom: 5px solid rgb(10, 19, 136);
+    border-bottom: 5px solid rgb(14, 81, 145);
 }
 
 .startButton3{
     background-color: rgb(53, 50, 216);
-    color: rgb(32, 23, 110);
+    color: rgb(33, 31, 129);
     padding: 4px 30px;
     border: none;
     outline: none;
     border-radius: 15px;
     cursor: pointer;
     text-shadow: -1px -1px 1px rgb(232, 255, 230);
-    border-bottom: 5px solid rgb(33, 110, 23);
+    border-bottom: 5px solid rgb(33, 31, 129);
 }
 
 .startButton4{
