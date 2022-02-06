@@ -21,7 +21,12 @@ body{
     width: 500px;
     margin: 0 auto;
     text-align: center;
-    background-color: rgb(255, 248, 236);
+    background: #36c;
+    background: linear-gradient(#ffffff 50%, rgba(255,255,255,0) 0) 0 0,
+    radial-gradient(circle closest-side, #FFFFFF 53%, rgba(255,255,255,0) 0) 0 0,
+    radial-gradient(circle closest-side, #FFFFFF 50%, rgba(255,255,255,0) 0) 55px 0 #48B;
+    background-size: 110px 200px;
+    background-repeat: repeat-x;
     border: 1px solid;
     border-radius: 15px;
 }
@@ -59,7 +64,7 @@ body{
 }
 
 .startButton1{
-    background-color: rgb(247, 160, 62);
+    background-color: rgb(62, 204, 247);
     color: rgb(117, 78, 33);
     padding: 4px 30px;
     border: none;
@@ -71,7 +76,7 @@ body{
 }
 
 .startButton2{
-    background-color: rgb(12, 27, 241);
+    background-color: rgb(12, 130, 241);
     color: rgb(10, 19, 136);
     padding: 4px 30px;
     border: none;
@@ -83,8 +88,8 @@ body{
 }
 
 .startButton3{
-    background-color: rgb(69, 216, 50);
-    color: rgb(33, 110, 23);
+    background-color: rgb(53, 50, 216);
+    color: rgb(32, 23, 110);
     padding: 4px 30px;
     border: none;
     outline: none;
@@ -189,12 +194,12 @@ body{
 
 .question1{
     font-size: 30px;
-    color: gray;
+    color: rgb(253, 253, 253);
 }
 
 .question2{
     font-size: 20px;
-    color: gray;
+    color: rgb(255, 255, 255);
 }
 
 .question3{

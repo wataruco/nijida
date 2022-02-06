@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@shitayudedaikon" />
-    <meta name="twitter:title" content="にじ打" />
-    <meta name="twitter:description" content="にじさんじライバーのタイピングゲーム" />
-    <meta name="twitter:image" content="https://wataruco.github.io/nijida/twittercard.png" />
+    <meta name="twitter:title" content="ホロ打" />
+    <meta name="twitter:description" content="ホロライブメンバーのタイピングゲーム" />
+    <meta name="twitter:image" content="https://wataruco.github.io/nijida/holoda/twittercard.png" />
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -90,14 +90,14 @@
         new Vue({
             el:"#app",
             data:{
-                mondaiURL:"https://wataruco.github.io/holoda/holomen.csv",
+                mondaiURL:"https://wataruco.github.io/nijida/holoda/holomen.csv",
                 kanayomiURL:"https://wataruco.github.io/nijida/kanayomi.csv",
                 boinURL:"https://wataruco.github.io/nijida/boin.csv",
-                endmURL:"https://wataruco.github.io/holoda/endmessage.csv",
+                endmURL:"https://wataruco.github.io/nijida/holoda/endmessage.csv",
                 twiURL1:'https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/nijida.html&text=',
                 twiURL2:"",
                 twiURL3:'&hashtags=にじ打&count=none&lang=ja',
-                topURL:"https://wataruco.github.io/holoda/holoda.html",
+                topURL:"https://wataruco.github.io/nijida/holoda/holoda.html",
                 startFlg:"",
                 current_question:"",
                 questionMath:10,
@@ -217,13 +217,13 @@
                     this.misstypecount = 0      //ミスタイプカウント数をリセット
                     this.endtxt = ""
                     if(qnum == this.shokyuu){
-                        this.endtxt = this.endtxt + "にじ打 初級クリア!"
+                        this.endtxt = this.endtxt + "ホロ打 初級クリア!"
                     }
                     else if(qnum == this.joukyuu){
-                        this.endtxt = this.endtxt + "にじ打 上級クリア!"
+                        this.endtxt = this.endtxt + "ホロ打 上級クリア!"
                     }
                     else{
-                        this.endtxt = this.endtxt + "にじ打 全員分クリア!"
+                        this.endtxt = this.endtxt + "ホロ打 全員分クリア!"
                     }
                 },
 
