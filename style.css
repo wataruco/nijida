@@ -191,8 +191,13 @@ body{
     color: gray;
 }
 
-.question1{
-    font-size: 30px;
+.question1-1{
+    font-size: 25px;
+    color: gray;
+}
+
+.question1-2{
+    font-size: 12px;
     color: gray;
 }
 

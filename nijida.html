@@ -61,10 +61,11 @@
                     </div>
                 </div>
                 <div v-if="current_question_counts != question_counts">
-                    <div class="question1 mb-20">{{ current_question[1] }}</div>
+                    <div v-if="current_question[1].length>=20" class="question1-2 mb-20">{{ current_question[1] }}</div>
+                    <div v-else class="question1-1 mb-20">{{ current_question[1] }}</div>
                     <div class="mb-20">
-                        <nobr v-for="current_romaji_array3 in current_romaji_array3" class="question3">{{ current_romaji_array3 }}</nobr>
-                        <nobr v-for="current_romaji_array2 in current_romaji_array2" class="question2">{{ current_romaji_array2 }}</nobr>
+                        <nobr v-for="dhisplet2 in dhisplet2" class="question3">{{ dhisplet2 }}</nobr>
+                        <nobr v-for="dhisplet1 in dhisplet1" class="question2">{{ dhisplet1 }}</nobr>
                     </div>
                 </div>
                 <div v-if="current_question_counts == question_counts">
@@ -149,6 +150,9 @@
                 combocountMAX:100,      //連続カウント数を設定する変数
                 endFLG:0,               //ゲームが終了した時に1とするフラグ
                 misstypecount:0,
+                maxlength:10,           //問題文で表示される最大の文字数
+                dhisplet1:[],           //入力後の文字
+                dhisplet2:[],           //入力前の文字
                 questionsBox:[],
                 eru_array:[
                 ['すのーほわいとぱらだいすえるさんとふろうわすれなぴゅあぷりんせすりーぶるらぶはいでるんどこどこやったぜヴぁるきゅりあぱっしょんあーるヴのえるちゃこぼしえるありあふろーじあめいどいんぶるーむえる',
@@ -228,6 +232,12 @@
                     this.current_question_array = this.question_array[0]
                     this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
                     this.current_romaji_array2 = this.current_romaji_array.join('').split('')
+                    if(this.current_romaji_array2.length >= this.maxlength*2){
+                        this.dhisplet1 = this.current_romaji_array2.slice(0,this.maxlength*2)    
+                    }
+                    else{
+                        this.dhisplet1 = this.current_romaji_array2    
+                    }
                     this.question_counts = this.questions.length
                     this.startFlg = true;
                     this.typecount = 0          //タイプカウント数をゼロリセット
@@ -359,6 +369,25 @@
                                 this.typeBox = ""
                                 this.current_question_counts = this.current_question_counts + 1
                             }
+                            if(this.current_romaji_array2.length + this.current_romaji_array3.length >= this.maxlength*2){
+                                if(this.current_romaji_array2.length >= this.maxlength && this.current_romaji_array3.length >= this.maxlength){
+                                    this.dhisplet1 = this.current_romaji_array2.slice(0,this.maxlength)
+                                    this.dhisplet2 = this.current_romaji_array3.slice(this.maxlength*-1)
+                                }
+                                else if(this.current_romaji_array2.length < this.maxlength){
+                                    this.dhisplet1 = this.current_romaji_array2
+                                    this.dhisplet2 = this.current_romaji_array3.slice(this.maxlength*-2+this.current_romaji_array2.length)
+                                }
+                                else{
+                                    this.dhisplet2 = this.current_romaji_array3
+                                    this.dhisplet1 = this.current_romaji_array2.slice(0,this.maxlength*2-this.current_romaji_array3.length)
+                                }
+                            }
+                            else{
+                                this.dhisplet1 = this.current_romaji_array2
+                                this.dhisplet2 = this.current_romaji_array3
+                            }
+                            
                             if(this.current_question_counts == this.questionMath){
                                 this.endtime = Date.now()
                                 this.cleartime = this.endtime - this.starttime
