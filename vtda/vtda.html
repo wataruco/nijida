@@ -44,7 +44,7 @@
             <button class="setumeiButton mb-5" @click="aboutBTN">about</button>
         </div>
         <div v-if="startFlg">
-            <div v-if="kaishiFLG==0">
+            <div v-if="kaishiFLG==0" class="whiteletter">
                 スペースを入力すると開始します
             </div>
             <div v-if="kaishiFLG==1" class="countdown">
@@ -53,7 +53,7 @@
             
             <div v-if="kaishiFLG==2">
                 <div v-if="endFLG==0">
-                    <div> コンボメーター</div>
+                    <div class="whiteletter"> コンボメーター</div>
                     <div class="gaugeWrapper mb-20">
                         <div v-bind:style="styleObject2" class="gauge"></div>
                     </div>
@@ -73,7 +73,7 @@
                         <div> {{typeresulttxt4}}</div>
                         <div> {{typeresulttxt5}} </div>
                     </div>
-                        <div> {{ endmessagetext }}</div>
+                        <div class="whiteletter"> {{ endmessagetext }}</div>
                     <a id="twibtton2" class="btn mb-20" @click="twiaction">結果をツイート</a>
                 </div>
                 <button v-if="current_question_counts == question_counts" class="startButton mb-20" @click="again">もう一度</button>
@@ -81,7 +81,7 @@
                 <div class="gaugeWrapper mb-20">
                     <div v-bind:style="styleObject" class="gauge"></div>
                 </div>
-                <div>{{current_question_counts}}/{{question_counts}}</div>
+                <div class="whiteletter">{{current_question_counts}}/{{question_counts}}</div>
             </div>
         </div>
     </div>
@@ -205,6 +205,7 @@
                     this.combocount = 0
                     this.endFLG = 0
                     this.twiURL2 = ""
+                    console.log()
                     this.randomSeed = dice(this.question_box_counts,this.questionMath)
                     for(var i=0;i<this.randomSeed.length;i++){
                         this.questions[i] = this.questionsBox[this.randomSeed[i]]

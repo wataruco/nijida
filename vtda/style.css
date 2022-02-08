@@ -21,21 +21,33 @@ body{
     width: 500px;
     margin: 0 auto;
     text-align: center;
-    background: #36c;
-    background: linear-gradient(#ffffff 50%, rgba(255,255,255,0) 0) 0 0,
-    radial-gradient(circle closest-side, #FFFFFF 53%, rgba(255,255,255,0) 0) 0 0,
-    radial-gradient(circle closest-side, #FFFFFF 50%, rgba(255,255,255,0) 0) 55px 0 #48B;
-    background-size: 110px 200px;
-    background-repeat: repeat-x;
+    background-color:#d50000;
+    background-image: 
+    repeating-linear-gradient(
+      45deg,
+      rgba(0,0,0,0.8),
+      rgba(0,0,0,0.8) 100px,
+      transparent 0px,
+      transparent 200px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(0,0,0,0.5),
+      rgba(0,0,0,0.5) 100px,
+      transparent 0px,
+      transparent 200px
+    );
     border: 1px solid;
     border-radius: 15px;
 }
 .title{
+    color: #fff;
     position: relative;
     white-space: nowrap;
     font-size: 32px;
 }
 .title2{
+    color: #fff;
     position: relative;
     top: -32px;
     left: 110px;
@@ -189,7 +201,7 @@ body{
 }
 
 .question{
-    color: gray;
+    color: #fff;
 }
 
 .question1{
@@ -204,7 +216,7 @@ body{
 
 .question3{
     font-size: 20px;
-    color: red;
+    color: yellow;
 }
 
 .nextquestion{
@@ -214,7 +226,6 @@ body{
     color:antiquewhite;
 }
 .clear{
-
     color: #03a9f4;
 }
 
@@ -314,11 +325,17 @@ body{
 }
 
 .countdown{
+    color: #fff;
     font-size: 100px;
 }
 
 .resultTXT{
+    color: #fff;
     font-size: 18px;
+}
+
+.whiteletter{
+    color: #fff;
 }
 
 header {
