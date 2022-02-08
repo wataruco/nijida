@@ -30,7 +30,7 @@
     <div class="mb-20"></div>
     <div id="app" class="container">
         <div class="mb-20"></div>
-        <div class="title">ホロ打</div> 
+        <div class="title">VT打</div> 
         <div class="title2"> ～タイピング測定～</div>
 
         <div v-if="startFlg!=true">
@@ -90,14 +90,14 @@
         new Vue({
             el:"#app",
             data:{
-                mondaiURL:"https://wataruco.github.io/nijida/holoda/holodmen2.csv",
+                mondaiURL:"https://wataruco.github.io/nijida/vtda/vtlist2.csv",
                 kanayomiURL:"https://wataruco.github.io/nijida/kanayomi2.csv",
                 boinURL:"https://wataruco.github.io/nijida/boin2.csv",
-                endmURL:"https://wataruco.github.io/nijida/holoda/endmessage2.csv",
-                twiURL1:'https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/holoda/holoda.html&text=',
+                endmURL:"https://wataruco.github.io/nijida/vtda/endmessage2.csv",
+                twiURL1:'https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/vtda/vtda.html&text=',
                 twiURL2:"",
                 twiURL3:'&hashtags=ホロ打&count=none&lang=ja',
-                topURL:"https://wataruco.github.io/nijida/holoda/holodaabout.html",
+                topURL:"https://wataruco.github.io/nijida/vtda/vtdaabout.html",
                 startFlg:"",
                 current_question:"",
                 questionMath:10,
