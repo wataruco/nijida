@@ -63,39 +63,39 @@ body{
 }
 
 .startButton1{
-    background-color: rgb(84, 247, 62);
-    color: rgb(55, 155, 41);
+    background-color: #00c800;
+    color: #008000;
     padding: 4px 30px;
     border: none;
     outline: none;
     border-radius: 15px;
     cursor: pointer;
     text-shadow: -1px -1px 1px #FFF;
-    border-bottom: 5px solid rgb(55, 155, 41);
+    border-bottom: 5px solid #008000;
 }
 
 .startButton2{
-    background-color: rgb(244, 247, 62);
-    color: rgb(128, 129, 34);
+    background-color: #ffff00;
+    color: #a3a300;
     padding: 4px 30px;
     border: none;
     outline: none;
     border-radius: 15px;
     cursor: pointer;
     text-shadow: -1px -1px 1px #FFF;
-    border-bottom: 5px solid rgb(128, 129, 34);
+    border-bottom: 5px solid #a3a300;
 }
 
 .startButton3{
-    background-color: rgb(216, 69, 50);
-    color: rgb(158, 56, 42);
+    background-color: #ff0000;
+    color: #a30000;
     padding: 4px 30px;
     border: none;
     outline: none;
     border-radius: 15px;
     cursor: pointer;
     text-shadow: -1px -1px 1px #FFF;
-    border-bottom: 5px solid rgb(158, 56, 42);
+    border-bottom: 5px solid #a30000;
 }
 
 .startButton4{
