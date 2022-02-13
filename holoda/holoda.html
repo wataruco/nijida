@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@shitayudedaikon" />
+    <meta name="twitter:title" content="ホロ打" />
+    <meta name="twitter:description" content="ホロライブメンバーのタイピングゲーム" />
+    <meta name="twitter:image" content="https://wataruco.github.io/nijida/holoda/twittercard.png" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<body>
+    <header>
+        <h1 class="headertitle">大根の情報置き場</h1>
+        <nav class="nav">
+            <ul class="menu-group">
+                <li class="menu-item"><a href="https://wataruco.github.io/nijida/">トップページ</a></li>
+                <li class="menu-item"><a href="https://wataruco.github.io/nijida/nijida.html">にじ打</a></li>
+                <li class="menu-item"><a href="https://wataruco.github.io/nijida/holoda/holoda.html">ホロ打</a></li>
+                <li class="menu-item"><a href="https://wataruco.github.io/nijida/vtda/vtda.html">VTu打</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="mb-20"></div>
+    <div id="app" class="container">
+        <div class="mb-20"></div>
+        <div class="title">ホロ打</div> 
+        <div class="title2"> ～タイピング測定～</div>
+
+        <div v-if="startFlg!=true">
+            <div><button class="startButton1 mb-5" @click="gameStart(shokyuu)">START初級</button></div>
+            <div><button class="startButton2 mb-5" @click="gameStart(joukyuu)">START上級</button></div>
+            <div><button class="startButton3 mb-5" @click="gameStart(zenbu)">START全部</button></div>
+            <div>
+                <nobr v-if="soundFLG==0"><button class="setumeiButton mb-5" @click="soundswichBTN">音声オフ</button></nobr>
+                <nobr v-if="soundFLG==1"><button class="setumeiButton2 mb-5" @click="soundswichBTN">音声オン</button></nobr>
+            </div>
+            <button class="setumeiButton mb-5" @click="aboutBTN">about</button>
+        </div>
+        <div v-if="startFlg">
+            <div v-if="kaishiFLG==0">
+                スペースを入力すると開始します
+            </div>
+            <div v-if="kaishiFLG==1" class="countdown">
+                {{ countdownNUM }}
+            </div>
+            
+            <div v-if="kaishiFLG==2">
+                <div v-if="endFLG==0">
+                    <div> コンボメーター</div>
+                    <div class="gaugeWrapper mb-20">
+                        <div v-bind:style="styleObject2" class="gauge"></div>
+                    </div>
+                </div>
+                <div v-if="current_question_counts != question_counts">
+                    <div class="question1 mb-20">{{ current_question[1] }}</div>
+                    <div class="mb-20">
+                        <nobr v-for="dhisplet2 in dhisplet2" class="question3">{{ dhisplet2 }}</nobr>
+                        <nobr v-for="dhisplet1 in dhisplet1" class="question2">{{ dhisplet1 }}</nobr>
+                    </div>
+                </div>
+                <div v-if="current_question_counts == question_counts">
+                    <div class="resultTXT">
+                        <div> {{typeresulttxt1}}</div>
+                        <div> {{typeresulttxt2}}</div>
+                        <div> {{typeresulttxt3}}</div>
+                        <div> {{typeresulttxt4}}</div>
+                        <div> {{typeresulttxt5}} </div>
+                    </div>
+                        <div> {{ endmessagetext }}</div>
+                    <a id="twibtton2" class="btn mb-20" @click="twiaction">結果をツイート</a>
+                </div>
+                <button v-if="current_question_counts == question_counts" class="startButton mb-20" @click="again">もう一度</button>
+
+                <div class="gaugeWrapper mb-20">
+                    <div v-bind:style="styleObject" class="gauge"></div>
+                </div>
+                <div>{{current_question_counts}}/{{question_counts}}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el:"#app",
+            data:{
+                mondaiURL:"https://wataruco.github.io/nijida/holoda/holomen2.csv",
+                kanayomiURL:"https://wataruco.github.io/nijida/kanayomi2.csv",
+                boinURL:"https://wataruco.github.io/nijida/boin2.csv",
+                endmURL:"https://wataruco.github.io/nijida/holoda/endmessage2.csv",
+                twiURL1:'https://twitter.com/intent/tweet?url=https://wataruco.github.io/nijida/holoda/holoda.html&text=',
+                twiURL2:"",
+                twiURL3:'&hashtags=ホロ打&count=none&lang=ja',
+                topURL:"https://wataruco.github.io/nijida/holoda/holodaabout.html",
+                startFlg:"",
+                current_question:"",
+                questionMath:10,
+                questions:[,],
+                typeBox:"",
+                typeresulttxt1:"",
+                typeresulttxt2:"",
+                typeresulttxt3:"",
+                typeresulttxt4:"",
+                typeresulttxt5:"",
+                endmessagetext:"",
+                twit:"",
+                current_question_counts:0,
+                question_contents:0,
+                question_box_counts:0,
+                question_array:[],
+                current_question_array:[],
+                semi_current_question_array:[],
+                current_romaji_array:[], //一部つながった状態のローマ字
+                current_romaji_array2:[], //完全に分離した状態のローマ字
+                current_romaji_array3:[], //完全に分離した状態のローマ字で入力後の表示に使う
+                romaji_array:[],
+                randomSeed:[],
+                shokyuu:0,
+                joukyuu:0,
+                cleartime:0,
+                nyuuryokumoji:"",
+                romaji:"",
+                hantei:0,
+                nokori:"",
+                nyuuryokubafa:"",
+                nnext:"",
+                setumeiFLG:0,
+                soundFLG:0,
+                kaishiFLG:0,
+                countdownNUM:3,
+                starttime:0,
+                endtime:0,
+                typecount:0,
+                combocount:0,
+                combocountMAX:100,      //連続カウント数を設定する変数
+                endFLG:0,               //ゲームが終了した時に1とするフラグ
+                misstypecount:0,
+                maxlength:10,           //問題文で表示される最大の文字数
+                dhisplet1:[],           //入力後の文字
+                dhisplet2:[],           //入力前の文字
+                questionsBox:[],
+                henkan_array:[],
+                boin:[],
+                endmessage:[],
+            },
+            computed:{
+                styleObject:function(){
+                    width =  this.current_question_counts / this.question_counts * 100 + "%"
+                    if(this.current_question_counts == this.question_counts){
+                        color = 'green'
+                    }else{
+                        color = 'orange'
+                    }
+                    return{
+                        'width':width,
+                        'background-color':color
+                    }
+                },
+                styleObject2:function(){
+                    mincount = this.combocount
+                    if(mincount > 100){
+                        mincount = 100
+                    }
+                    width =  mincount / this.combocountMAX * 100 + "%"
+                    if(mincount <= this.combocountMAX/4){
+                        color = "#87ceeb"
+                    }
+                    else if(mincount <= this.combocountMAX/2){
+                        color = "#00bfff"
+                    }
+                    else if(mincount <= this.combocountMAX*3/4){
+                        color = "#1e90ff"
+                    }
+                    else{
+                        color = "#0000ff"
+                    }
+                    return{
+                        'width':width,
+                        'background-color':color
+                    }
+                }
+            },
+            methods:{           
+                gameStart:async function(qnum){
+                    this.questionsBox = await getcsv(this.mondaiURL)
+                    this.henkan_array = await getcsv(this.kanayomiURL)
+                    this.boin = await getcsv(this.boinURL)
+                    this.endmessage = await getcsv(this.endmURL)
+                    this.question_box_counts = this.questionsBox.length
+                    if(qnum == 999){
+                        this.questionMath = this.questionsBox.length
+                    }
+                    else{
+                        this.questionMath = qnum
+                    }
+                    this.kaishiFLG = 0
+                    this.countdownNUM = 3
+                    this.combocount = 0
+                    this.endFLG = 0
+                    this.twiURL2 = ""
+                    this.randomSeed = dice(this.question_box_counts,this.questionMath)
+                    for(var i=0;i<this.randomSeed.length;i++){
+                        this.questions[i] = this.questionsBox[this.randomSeed[i]]
+                        this.question_array[i] = mojibun(this.questions[i][0],this.henkan_array)
+                    }
+                    this.current_question = this.questions[0]
+                    this.current_question_array = this.question_array[0]
+                    this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
+                    this.current_romaji_array2 = this.current_romaji_array.join('').split('')
+                    if(this.current_romaji_array2.length >= this.maxlength*2){
+                        this.dhisplet1 = this.current_romaji_array2.slice(0,this.maxlength*2)    
+                    }
+                    else{
+                        this.dhisplet1 = this.current_romaji_array2    
+                    }
+                    this.question_counts = this.questions.length
+                    this.startFlg = true;
+                    this.typecount = 0          //タイプカウント数をゼロリセット
+                    this.misstypecount = 0      //ミスタイプカウント数をリセット
+                    this.endtxt = ""
+                    if(qnum == this.shokyuu){
+                        this.endtxt = this.endtxt + "ホロ打 初級クリア!"
+                    }
+                    else if(qnum == this.joukyuu){
+                        this.endtxt = this.endtxt + "ホロ打 上級クリア!"
+                    }
+                    else{
+                        this.endtxt = this.endtxt + "ホロ打 全員分クリア!"
+                    }
+                },
+
+                setumeiBTN:function(){
+                    if(this.setumeiFLG == 0){
+                        this.setumeiFLG = 1
+                    }
+                    else{
+                        this.setumeiFLG = 0
+                    }
+                },
+                soundswichBTN:function(){
+                    if(this.soundFLG == 0){
+                        this.soundFLG = 1
+                    }
+                    else{
+                        this.soundFLG = 0
+                    }
+                },
+                again:function(){
+                    this.startFlg = false;
+                    this.current_question = ""
+                    this.current_question_counts = 0
+                    this.questions = [,]
+                },
+                twiaction:function(){
+                    window.open(this.twiURL1 + this.twiURL2 + this.twiURL3, '_blank');
+                },
+                aboutBTN:function(){
+                    window.location.href = this.topURL
+                },
+                onKeyDown(event) {
+                    if(this.endFLG == 0){
+                        e =  event.key
+                        if(this.kaishiFLG == 0){
+                            if(e == " "){
+                                this.kaishiFLG = 1
+                                window.setTimeout(() => {
+                                    this.countdownNUM = 2
+                                    window.setTimeout(() => {
+                                        this.countdownNUM = 1
+                                        window.setTimeout(() => {
+                                        this.countdownNUM = 0
+                                            this.kaishiFLG = 2
+                                            this.starttime = Date.now()
+                                }, 1000);
+                                    }, 1000);
+                                }, 1000);
+                            }
+                        }
+                        else{
+                            if(this.soundFLG == 1){
+                                typsound()
+                            }
+                            if(this.current_question_array[0]=="ん" && this.nyuuryokubafa == "n" && this.current_question_array.length != 1 && e != "n"){
+                                if(nhantei(this.current_question_array[1],e,this.boin)==0){
+                                    this.current_question_array.splice(0,1)
+                                    this.nyuuryokubafa = ""
+                                }
+                            }
+                            this.hantei = mojihantei(this.current_question_array[0],this.nyuuryokubafa + e,this.henkan_array,this.boin,this.current_question_array[1])
+                            this.nokori = this.hantei[1]
+                            
+                            if(this.hantei[0] == 1){
+                                this.typecount = this.typecount + 1     //正解タイプカウント数を進める
+                                this.combocount += 1                    //連続カウント数を進める    
+                                if(this.hantei[1] == ""){    
+                                    this.current_question_array.splice(0,1)
+                                    this.current_romaji_array2 = romajihenkan(this.current_question_array,this.henkan_array)
+                                    this.current_romaji_array3.push(e)
+                                    this.typeBox = ""
+                                    this.nyuuryokubafa = ""
+                                }
+                                else{
+                                    this.semi_current_question_array = []
+                                    for(var i=1;i<this.current_question_array.length;i++){
+                                        this.semi_current_question_array.push(this.current_question_array[i])
+                                    }
+                                    this.current_romaji_array2 = romajihenkan(this.semi_current_question_array,this.henkan_array)
+                                    this.current_romaji_array3.push(e)
+                                    this.current_romaji_array2.unshift(this.nokori)
+                                    this.nyuuryokubafa = this.nyuuryokubafa + e
+                                }
+                            }
+                            else if(this.hantei[0]==0){
+                                this.misstypecount = this.misstypecount + 1     //ミスタイプカウント数を進める
+                                this.combocount = 0                             //連続カウント数をリセットする
+                            }
+                            else{
+                                this.current_question_array.splice(0,1)
+                                this.current_romaji_array2 = romajihenkan(this.current_question_array,this.henkan_array)
+                                this.current_romaji_array3.push(e)
+                            }
+                            this.typeBox = ""
+                            if(this.current_romaji_array2.length == 0){
+                                if(this.soundFLG == 1){
+                                    speaker(this.current_question[0])
+                                }
+                                this.current_question = this.questions[this.current_question_counts+1]
+                                this.current_question_array = this.question_array[this.current_question_counts+1]
+                                if(this.current_question_counts < this.questionMath - 1){
+                                    this.current_romaji_array = romajihenkan(this.current_question_array,this.henkan_array)
+                                    this.current_romaji_array2 = this.current_romaji_array.join('').split('')
+                                }
+                                this.current_romaji_array3 = []
+                                this.typeBox = ""
+                                this.current_question_counts = this.current_question_counts + 1
+                            }
+                            if(this.current_romaji_array2.length + this.current_romaji_array3.length >= this.maxlength*2){
+                                if(this.current_romaji_array2.length >= this.maxlength && this.current_romaji_array3.length >= this.maxlength){
+                                    this.dhisplet1 = this.current_romaji_array2.slice(0,this.maxlength)
+                                    this.dhisplet2 = this.current_romaji_array3.slice(this.maxlength*-1)
+                                }
+                                else if(this.current_romaji_array2.length < this.maxlength){
+                                    this.dhisplet1 = this.current_romaji_array2
+                                    this.dhisplet2 = this.current_romaji_array3.slice(this.maxlength*-2+this.current_romaji_array2.length)
+                                }
+                                else{
+                                    this.dhisplet2 = this.current_romaji_array3
+                                    this.dhisplet1 = this.current_romaji_array2.slice(0,this.maxlength*2-this.current_romaji_array3.length)
+                                }
+                            }
+                            else{
+                                this.dhisplet1 = this.current_romaji_array2
+                                this.dhisplet2 = this.current_romaji_array3
+                            }
+                            if(this.current_question_counts == this.questionMath){
+                                this.endtime = Date.now()
+                                this.cleartime = this.endtime - this.starttime
+                                this.typeresulttxt1  = "クリアタイム:" + timetotext(this.cleartime/1000)
+                                this.typeresulttxt2 = "タイプ数:" + (this.typecount + this.misstypecount) + " 回"
+                                this.typeresulttxt3 = "ミスタイプ数:" + this.misstypecount + " 回"
+                                this.typeresulttxt4 = "タイプ速度:" + Math.floor(this.typecount/(this.cleartime/1000)*100)/100 + " type/sec"
+                                this.typeresulttxt5 = "タイプ精度:" + Math.floor(this.typecount/(this.typecount+this.misstypecount)*10000)/100 + " パーセント"
+                                this.endmessagetext = this.endmessage[Math.floor(Math.random()*this.endmessage.length)][0]
+                                this.twiURL2 = this.endtxt + "%0D%0A" + this.typeresulttxt1 + "%0D%0A" + this.typeresulttxt4 + "%0D%0A" + this.typeresulttxt5 + "%0D%0A"       //ツイートメッセージを入れる
+                                this.endFLG = 1
+                            }
+                        }
+                    }
+                },
+            },
+            mounted:function(){
+                this.shokyuu = 10
+                this.joukyuu = 30
+                this.zenbu = 999
+                document.addEventListener('keydown', this.onKeyDown)
+            },
+
+            beforeDestroy() {
+                document.removeEventListener('keydown', this.onKeyDown)
+            },
+        })
+
+        csvarray = []
+        uttr = new SpeechSynthesisUtterance()
+        audioa = new Audio("https://wataruco.github.io/nijida/meka_ka_type02.mp3")
+
+        function mojibun(question,henkan_array)  //問題文を1文字に分解して配列で返すたとえば"つきのみと"を　["つ","き","の","み""と"]　という感じの配列にする
+                            //文字で小さい文字を整列するもの　し　と　ょ　をあわせて「しょ」にする小さい「っ」は後に合わせて「っさ」という感じにする
+            {
+                var komoji = ['ぁ','ぃ','ぅ','ぇ','ぉ','ゃ','ゅ','ょ',"っ"]
+                var returnmoji = []
+                var returnmoji2 = []
+                var mojilen = question.length
+                mojiarray = question.split("")  //ここで文字列を一文字ごとにわけて配列の形に分解する
+                for(var i=0;i<mojiarray.length;i++)
+                {
+                    for(var j=0;j<komoji.length;j++)
+                    {
+                        if(mojiarray[i] == komoji[j]){
+                            if(mojiarray[i] == "っ"){
+                                mojiarray[i+1] = mojiarray[i] + mojiarray[i+1]  //ここで「っ」を判定して後ろの文字にくっつける「っ」はそのまま
+                                break
+                            }
+                            else{
+                                mojiarray[i-1] = mojiarray[i-1] + mojiarray[i]  //ここで「っ」意外の小文字を判定し、前の文字にくっつける小文字はそのまま
+                                break
+                            }
+                        }
+                    }
+                }
+                for(var i=0;i<mojiarray.length;i++)
+                { 
+                    var komojiflg = 0
+                    for(var j=0;j<komoji.length;j++)
+                    {
+                        if(mojiarray[i] == komoji[j]){
+                            komojiflg = 1
+                            break
+                        }
+                    }
+                    if(mojiarray[i] === "っ")
+                    {
+                        komojiflg = 1
+                    }
+                    if(komojiflg == 0)
+                    {
+                        returnmoji.push(mojiarray[i])
+                    }
+                }
+                for(var i=0;i<returnmoji.length;i++)
+                {
+                    for(var j=0;j<henkan_array.length;j++)
+                    {
+                        if(returnmoji[i] == henkan_array[j][0]){
+                            returnmoji2.push(henkan_array[j][1])
+                            break
+                        }
+                    }
+                }
+                return returnmoji
+            }
+        function dice(hani,kazu){    //引数の数の範囲内でランダムな順で配列を返す
+                                    //例えば97と10を受け取ると0~96までの数値を重複なしでランダムに10個配列に入れて返す
+            var returnnum = [];
+            var randomnum = 0;
+            for(i=0;i<kazu;i++)
+            {
+                randomnum = Math.floor(Math.random()*hani)
+                returnnum.push(randomnum)
+                var numcount = returnnum.length
+                if(i!=0){
+                    for(j=0;j<numcount;j++)
+                    {
+                        if(randomnum == returnnum[j-1]){
+                            returnnum.pop()
+                            i--
+                            break
+                        }
+                    }
+                }
+            }
+            return returnnum
+        }
+        function romajihenkan(moji_array,henkan_array){
+            var return_array = []
+            var komojiiri = ""
+            for(var i=0;i<moji_array.length;i++)
+            {
+                ttflg = 0    
+                if(moji_array[i].charAt(0) == "っ"){
+                    komojiiri = moji_array[i].replace('っ',"")
+                    for(var j=0;j<henkan_array.length;j++)
+                    {
+                        if(komojiiri == henkan_array[j][0]){
+                            return_array.push(henkan_array[j][1].charAt(0) + henkan_array[j][1])
+                        }
+                    }
+                }
+                else{
+                    for(var j=0;j<henkan_array.length;j++){
+                        if(moji_array[i] == henkan_array[j][0]){
+                            return_array.push(henkan_array[j][1])
+                        }
+                    }
+                }
+            }
+            return return_array
+        }
+        function mojihantei(hanteimoji,nyuuryokumoji,henkan_array,boin){        //例えば、「あ」という文字(hanteimoji)に対して「a」が入力されたら(nyuuryokumoji)正解とする
+                                                                                //「しゃ」とかの文字も判定する 
+            var return_array = [0,""]                                           //戻り値は配列にして１個目を正解フラグ、２個目を残りの文字列とする
+            var yomi_array = []
+            var komoji_array = []
+            var nyuuryokmoji_array = nyuuryokumoji.split()                      //入力した文字を１文字ごとの配列にする
+            var komojiiri = ""
+            if(hanteimoji.charAt(0) == "っ"){
+                komojiiri = hanteimoji.replace("っ","")
+                for(i=0;henkan_array.length;i++){
+                    if(komojiiri == henkan_array[i][0]){
+                        for(j=0;j<henkan_array[i].length;j++){
+                            yomi_array.push(henkan_array[i][j].charAt(0) + henkan_array[i][j])
+                        }
+                        break
+                    }
+                }
+            }
+            else{
+                for(var i=0;i<henkan_array.length;i++){
+                    if(hanteimoji == henkan_array[i][0]){                           //ここで判定する文字に対する読み方を探して取り出す
+                        yomi_array = henkan_array[i]
+                        break
+                    }
+                }
+            }
+            for(var i=0;i<yomi_array.length;i++){
+                if(yomi_array[i] == nyuuryokumoji){                             //ここで読み方に完全一致しているか判定して
+                    return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
+                    return_array[1] = ""                                        //ここで戻り値の残り部分を初期化する
+                    break
+                }
+                if(yomi_array[i].indexOf(nyuuryokumoji) == 0){                  //ここで読み方の前方一致しているかを判定して
+                    return_array[0] = 1                                         //ここで戻り値の正解フラグを１にする
+                    return_array[1] = yomi_array[i].replace(nyuuryokumoji,"")   //ここで一致している部分を消して入力していない部分を戻り値に設定する
+                    break
+                }
+            }
+        return return_array
+        }
+
+        function nhantei(nextmoji,nyuuryokumoji,boin){
+            var returnflg = 0
+            for(i=0;i<boin.length;i++){
+                if(boin[i][0]==nextmoji){
+                    returnflg = 1
+                    break
+                }
+            }
+            return returnflg
+        }
+
+        function hankaku(tbox){     //テキストボックスの入力を半角モードにする
+            tbox.style.imeMode="inactive";
+        }
+        function timetotext(cleartime){     //クリア時間をテキスト形式にして返す
+            var hor = 0
+            var min = 0
+            var sec = 0
+            var msec = 0
+            var text = ""
+            sec = Math.floor(cleartime)
+            msec = Math.floor((cleartime - sec)*100)/100
+            min = Math.floor(sec/60)
+            hour = Math.floor(min/60)
+            sec = sec % 60
+            if(hor != 0){
+                text = text + hor + "時間"
+            }
+            if(min != 0){
+                text = text + min + "分"
+            }
+            if(msec != 0){
+                sec = sec + msec
+                text = text + sec + "秒"
+            }
+            if(msec == 0){
+                text = text + sec + ".0 秒"
+            }
+            return text
+            
+        }
+
+        window.onload = function(){
+            target = document.getElementById('twibtton2')
+        }
+
+        async function getcsv(url){
+            csvarray = []
+            const res = await fetch(url)
+            const ab = await res.arrayBuffer()
+            const td = new TextDecoder("utf-8")
+            const csvdata = td.decode(ab)
+            csvmake(csvdata)
+            return csvarray
+        }
+
+        async function csvmake(csvdata){
+            var oneD = csvdata.split("\n")
+            for(i=0;i<oneD.length-1;i++){
+                csvarray.push(oneD[i].split(","))
+            }
+        }
+
+        async function speaker(moji){
+            uttr.text = moji
+            await speechSynthesis.speak(uttr)
+        }
+
+        async function typsound(){
+            await audioa.play()
+        }
+
+        async function countdown(){
+            const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            await _sleep(2000);
+        }
+    </script>
+</body>
+</html>
